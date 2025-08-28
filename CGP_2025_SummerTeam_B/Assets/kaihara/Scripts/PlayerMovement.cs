@@ -84,11 +84,16 @@ public class PlayerMovement : MonoBehaviour
     //壁ジャンプしたときに真上方向のベクトルからどれくらい斜めに飛ぶようにするか
     [SerializeField]
     private float wallJumpAngle;
+    //カメラ感度
+    [SerializeField]
+    private float cameraSensitivity;
 
     //player inputからの移動キーの入力保存用
     private Vector2 inputDirection;
     //前回射撃時の時間保存用変数
     private float lastFiredTime;
+    //カメラの回転の変数
+    private Vector2 cameraRotation;
     //接地判定のbool変数
     private bool onGround = true;
     private bool onWall = false;
@@ -126,7 +131,7 @@ public class PlayerMovement : MonoBehaviour
         if (isFire) Fire();
 
         //y座標が一定以下になったらリセット
-        if (transform.position.y < -100) SceneManager.LoadScene(0);
+        if (transform.position.y < -100) SceneManager.LoadScene("PlayerMotionTestScene");
     }
     //接地判定s
     private void OnCollisionEnter(Collision collision)
@@ -295,6 +300,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (context.performed) isFire = true;
         if (context.canceled) isFire = false;
+    }
+
+    public void OnCameraRotate(InputAction.CallbackContext context)
+    {
+        //マウスの移動量をカメラの回転量に加算
+        cameraRotation.x = Mathf.Clamp(cameraRotation.x + context.ReadValue<Vector2>().y * cameraSensitivity, -90, 80);
+        cameraRotation.y += context.ReadValue<Vector2>().x * cameraSensitivity;
+        //上の値をカメラの角度に反映
+        cameraBaseTransform.rotation = Quaternion.Euler(-cameraRotation.x, cameraRotation.y, 0);
     }
     //弾の射程のgetter
     public float BulletLengthGetter()

@@ -52,13 +52,5 @@ public class CameraController : MonoBehaviour
         
     }
 
-    //視点移動のマウス入力取得
-    public void OnCameraRotate(InputAction.CallbackContext context)
-    {
-        //マウスの移動量をカメラの回転量に加算
-        cameraRotation.x = Mathf.Clamp(cameraRotation.x + context.ReadValue<Vector2>().y * cameraSensitivity, -90, 80);
-        cameraRotation.y += context.ReadValue<Vector2>().x * cameraSensitivity;
-        //上の値をカメラの角度に反映
-        transform.rotation = Quaternion.Euler(-cameraRotation.x, cameraRotation.y, 0);
-    }
+
 }
