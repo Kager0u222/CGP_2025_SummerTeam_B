@@ -565,6 +565,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ChangeMagic",
+                    "type": "Value",
+                    "id": "402c1f04-dc40-4899-8cf5-ccb69dfe3f05",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -664,6 +673,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "415eb8f0-627b-43cd-86d4-7a1a5d11a281",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeMagic",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

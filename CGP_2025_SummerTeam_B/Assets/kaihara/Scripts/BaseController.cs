@@ -39,7 +39,6 @@ public class BaseController : MonoBehaviour
         {
             SceneManager.LoadScene("PlayerMotionTestScene");
         }
-        if (Keyboard.current.leftShiftKey.isPressed) Time.timeScale = 0.25f;
-        else Time.timeScale = 1f;
+        
     }
 }

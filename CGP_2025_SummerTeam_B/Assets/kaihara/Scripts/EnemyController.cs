@@ -65,10 +65,11 @@ public class EnemyController : MonoBehaviour
 
         //弾召喚
         GameObject bullet = Instantiate(enemyBulletPrefab, transform.position + Vector3.up * 0.5f, Quaternion.LookRotation((hit.point - (transform.position + Vector3.up * 0.5f)).normalized, Vector3.up));
-        bullet.GetComponent<BulletController>().BulletLenghtSetter(bulletLength);
+        
         //発射した時間を保存
         lastFiredTime = Time.time;
     }
+    
     public void PlayerSetter(GameObject player)
     {
         Player = player;
