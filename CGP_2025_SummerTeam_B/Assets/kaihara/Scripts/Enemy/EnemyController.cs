@@ -4,16 +4,11 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    //プレイヤーのレイヤー番号
-    [SerializeField]
-    private int playerLayer;
-    //地面のレイヤー番号
-    [SerializeField]
-    private int groundLayer;
+    //レイヤーのScriptableObject
+    [SerializeField] Layers layers;
 
     //弾の種類
-    [SerializeField]
-    private MagicTypeAsset.MagicType magicType;
+    [SerializeField] private MagicTypeAsset.MagicType magicType;
     //弾のステータスのSprictableObject
     [SerializeField] private MagicStatuses magicStatuses;
     //弾のステータス確認に使う変数
@@ -47,8 +42,8 @@ public class EnemyController : MonoBehaviour
         if (Time.time - lastFiredTime < magicStatus.MagicCoolTime * (1 + rmd)) return;
 
         //レイヤーマスクの設定
-        LayerMask layerMask = 1 << playerLayer;
-        layerMask += 1 << groundLayer;
+        LayerMask layerMask = 1 << layers.PlayerLayer;
+        layerMask += 1 << layers.GroundLayer;
 
         //レイの起点と向きの指定
         Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Player.transform.position - transform.position + Vector3.up * 0.5f);
@@ -58,7 +53,7 @@ public class EnemyController : MonoBehaviour
         //弾射出先の情報の保存
         bool isObjectAtAim = Physics.Raycast(ray, out hit, magicStatus.MagicLength, layerMask);
         //射程内にオブジェクトなしもしくは地面と接触したら終了
-        if (!isObjectAtAim) return;
+        if (!isObjectAtAim || hit.collider.gameObject.layer == layers.GroundLayer) return;
 
         //弾召喚
         magicPool.BorrowMagic(transform.position + Vector3.up * 0.5f, Quaternion.LookRotation((hit.point - (transform.position + Vector3.up * 0.5f)).normalized, Vector3.up),magicType);

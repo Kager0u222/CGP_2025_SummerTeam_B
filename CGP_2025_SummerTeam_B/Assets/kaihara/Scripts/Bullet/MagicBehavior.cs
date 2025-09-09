@@ -1,6 +1,7 @@
 
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public abstract class MagicBehavior : MonoBehaviour
 {
@@ -45,24 +46,37 @@ public abstract class MagicBehavior : MonoBehaviour
     {
         //移動時の特殊処理
         Movement();
+        //衝突処理用にSpherecast
+        RaycastHit hit;
+        LayerMask layerMask = 1 << layers.EnemyLayer;
+        layerMask += 1 << layers.PlayerLayer;
+        layerMask += 1 << layers.GroundLayer;
+        layerMask += 1 << layers.GimmickLayer;
+        //衝突で衝突処理
+        bool magicHit = Physics.SphereCast(transform.position - transform.forward * transform.localScale.z / 2, transform.localScale.x, transform.forward, out hit, currentStatus.MagicSpeed * Time.fixedDeltaTime + transform.localScale.z / 2, layerMask);
+        if(magicHit)    Collision(hit.collider.gameObject);
         //射程分移動で消滅
         if (Time.time - firedTime > currentStatus.MagicLength / currentStatus.MagicSpeed) magicController.EndMagic();
     }
-    public void Collision(Collider other)
+    void OnTriggerStay(Collider other)
+    {
+        Collision(other.gameObject);
+    }
+    public void Collision(GameObject hit)
     {
         //地面に触れたら消滅
-        if (other.gameObject.layer == layers.GroundLayer) magicController.EndMagic();
+        if (hit.layer == layers.GroundLayer) magicController.EndMagic();
 
         //自分の弾が敵もしくはギミックに触れたらもしくは敵の弾が自分に触れたら
-        if (((other.gameObject.layer == layers.EnemyLayer || other.gameObject.layer == layers.GimmickLayer) && !currentStatus.MagicIsEnemy) || (currentStatus.MagicIsEnemy && other.gameObject.layer == layers.PlayerLayer))
+        if (((hit.layer == layers.EnemyLayer || hit.layer == layers.GimmickLayer) && !currentStatus.MagicIsEnemy) || (currentStatus.MagicIsEnemy && hit.layer == layers.PlayerLayer))
         {
             //消滅
             magicController.EndMagic();
             //接触後の特殊な判定
             Hit();
-            if (other.gameObject.layer == layers.GimmickLayer) return;
+            if (hit.layer == layers.GimmickLayer) return;
         }
-        
+
     }
 
 

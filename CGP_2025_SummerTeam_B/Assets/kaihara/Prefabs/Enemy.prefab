@@ -151,7 +151,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c38478d5dbaa294192944f0ee75cb62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerLayer: 6
-  groundLayer: 3
+  layers: {fileID: 11400000, guid: c7cbc7ebd16c4dc4c9abe1ffcb9f7442, type: 2}
   magicType: 3
   magicStatuses: {fileID: 11400000, guid: 2dd12ecc3a90a6945a0911291bf88519, type: 2}

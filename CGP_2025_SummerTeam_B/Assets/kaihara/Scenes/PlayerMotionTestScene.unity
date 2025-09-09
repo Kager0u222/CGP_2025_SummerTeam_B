@@ -854,7 +854,7 @@ MonoBehaviour:
   PlayerWire: {fileID: 520316799}
   PlayerCollision: {fileID: 520316802}
   PlayerShooting: {fileID: 520316800}
-  layers: {fileID: 0}
+  layers: {fileID: 11400000, guid: c7cbc7ebd16c4dc4c9abe1ffcb9f7442, type: 2}
   cameraSensitivity: 0.05
 --- !u!54 &520316793
 Rigidbody:
@@ -1167,7 +1167,7 @@ MonoBehaviour:
   subWireTension: 20
   subWireTensionMaxDistance: 5
   subWireTensionToGimmick: 1
-  layers: {fileID: 0}
+  layers: {fileID: 11400000, guid: c7cbc7ebd16c4dc4c9abe1ffcb9f7442, type: 2}
 --- !u!114 &520316800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2445,7 +2445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8c2728a6203d9d409d18e245c1199e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layers: {fileID: 0}
+  layers: {fileID: 11400000, guid: c7cbc7ebd16c4dc4c9abe1ffcb9f7442, type: 2}
 --- !u!135 &1248336822
 SphereCollider:
   m_ObjectHideFlags: 0

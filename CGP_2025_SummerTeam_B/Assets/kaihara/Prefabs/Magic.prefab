@@ -122,10 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b488e0d090240d648a5be6cf27ce8d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundLayer: 3
-  gimmickLayer: 8
-  enemyLayer: 7
-  playerLayer: 6
+  layers: {fileID: 11400000, guid: c7cbc7ebd16c4dc4c9abe1ffcb9f7442, type: 2}
   magicMaterials:
   - {fileID: 2100000, guid: bf4d7d76582a1364f91a2ae1a3b63748, type: 2}
   - {fileID: 2100000, guid: dff4155b5a831f64bac210d4119c05cf, type: 2}
