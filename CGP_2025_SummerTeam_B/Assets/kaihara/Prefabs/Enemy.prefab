@@ -138,7 +138,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!114 &1276970871374363576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,6 +153,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerLayer: 6
   groundLayer: 3
-  fireCoolTime: 1
-  bulletLength: 100
-  enemyBulletPrefab: {fileID: 8562488466186176825, guid: c7b94d8a73788d745864522ffbe34b68, type: 3}
+  magicType: 3
+  magicStatuses: {fileID: 11400000, guid: 2dd12ecc3a90a6945a0911291bf88519, type: 2}

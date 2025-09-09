@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6598acf0ea866f7499e838cee08ad90b, type: 3}
+  m_Name: Magic Statuses
+  m_EditorClassIdentifier: 
+  playerMiddle:
+    magicDamage: 5
+    magicLength: 100
+    magicSpeed: 50
+    magicShake: 0.2
+    magicCoolTime: 0.1
+    magicLaunchCount: 1
+    magicIsEnemy: 0
+  playerShort:
+    magicDamage: 1
+    magicLength: 50
+    magicSpeed: 150
+    magicShake: 7
+    magicCoolTime: 0.5
+    magicLaunchCount: 8
+    magicIsEnemy: 0
+  playerLong:
+    magicDamage: 30
+    magicLength: 100
+    magicSpeed: 200
+    magicShake: 0
+    magicCoolTime: 1
+    magicLaunchCount: 1
+    magicIsEnemy: 0
+  enemyNormal:
+    magicDamage: 3
+    magicLength: 100
+    magicSpeed: 50
+    magicShake: 1
+    magicCoolTime: 0.5
+    magicLaunchCount: 1
+    magicIsEnemy: 1

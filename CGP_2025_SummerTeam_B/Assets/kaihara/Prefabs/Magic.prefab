@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 245917434781742863}
   - component: {fileID: -5593680352522421764}
   m_Layer: 9
-  m_Name: Bullet
+  m_Name: Magic
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -126,11 +126,12 @@ MonoBehaviour:
   gimmickLayer: 8
   enemyLayer: 7
   playerLayer: 6
-  bulletMaterials:
+  magicMaterials:
   - {fileID: 2100000, guid: bf4d7d76582a1364f91a2ae1a3b63748, type: 2}
   - {fileID: 2100000, guid: dff4155b5a831f64bac210d4119c05cf, type: 2}
   - {fileID: 2100000, guid: f364c3481d3726d42905ebf0d7393b86, type: 2}
-  bulletController: {fileID: 245917434781742863}
+  - {fileID: 2100000, guid: 3e84f06e9b9a1a44ab3e85d72e106879, type: 2}
+  magicStatuses: {fileID: 11400000, guid: 2dd12ecc3a90a6945a0911291bf88519, type: 2}
 --- !u!54 &-5593680352522421764
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -157,4 +158,4 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3

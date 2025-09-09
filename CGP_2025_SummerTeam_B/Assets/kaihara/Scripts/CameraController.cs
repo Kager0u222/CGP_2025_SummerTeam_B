@@ -7,26 +7,19 @@ public class CameraController : MonoBehaviour
     //カメラの位置の基準になるオブジェクトにつくスクリプト
 
     //playerオブジェクトのposition取得
-    [SerializeField, Header("playerオブジェクトのposition取得用")]
-    private Transform playerTransform;
+    [SerializeField] private Transform playerTransform;
     //cameraオブジェクト
-    [SerializeField, Header("カメラオブジェクト取得用")]
-    private GameObject cameraObject;
+    [SerializeField] private GameObject cameraObject;
     //カメラの注視点のオブジェクト
-    [SerializeField, Header("注視点オブジェクト取得用")]
-    private GameObject cameraFocusObject;
+    [SerializeField]private GameObject cameraFocusObject;
     //カメラ感度
-    [SerializeField, Header("カメラ感度")]
-    private float cameraSensitivity;
+    [SerializeField]private float cameraSensitivity;
 
     //物体の中心からみたカメラの中心(注視点?)の位置
-    [SerializeField, Header("カメラの注視点のローカル座標")]
-    private Vector3 cameraFocusLocalPosition;
+    [SerializeField] private Vector3 cameraFocusLocalPosition;
     //カメラから注視点までの距離
-    [SerializeField,Header("カメラ-注視点間の距離")]
-    private float cameraToFocusDistance;
-    //カメラの回転
-    private Vector2 cameraRotation;
+    [SerializeField] private float cameraToFocusDistance;
+
     void Start()
     {
         transform.eulerAngles = new Vector3(0, 0, 0);

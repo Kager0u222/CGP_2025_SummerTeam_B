@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class PlayerMiddleBehavior : MagicBehavior
+public class EnemyNormalBehavior : MagicBehavior
 {
-
 
     public override void Movement()
     {
@@ -11,8 +10,7 @@ public class PlayerMiddleBehavior : MagicBehavior
 
     public override void Hit()
     {
-        
+
     }
 
-    
 }

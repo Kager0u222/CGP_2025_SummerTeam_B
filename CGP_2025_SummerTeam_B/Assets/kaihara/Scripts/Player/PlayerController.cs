@@ -24,11 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerShooting PlayerShooting;
 
     //地面のレイヤーの番号
-    [SerializeField] private int groundLayer;
-    //敵のレイヤーの番号
-    [SerializeField] private int enemyLayer;
-    //オブジェクトのレイヤーの番号
-    [SerializeField] private int gimmickLayer;
+    [SerializeField] private Layers layers;
 
     //カメラ感度
     [SerializeField] private float cameraSensitivity;
@@ -54,8 +50,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //魔法のタイプを初期化
-        PlayerShooting.ChangeBullet(1);
     }
 
     void FixedUpdate()
@@ -65,9 +59,9 @@ public class PlayerController : MonoBehaviour
         //移動処理を実行
         PlayerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall,rb);
         //ワイヤー展開中の処理
-        PlayerWire.Wire(rb,groundLayer,gimmickLayer);
+        PlayerWire.Wire(rb,layers.GroundLayer,layers.GimmickLayer);
         //もし射撃中なら射撃
-        if (isFire) PlayerShooting.Shoot(groundLayer,enemyLayer,cameraTransform,cameraBaseTransform);
+        if (isFire) PlayerShooting.Shoot(layers.GroundLayer,layers.EnemyLayer,cameraTransform,cameraBaseTransform);
         //y座標が一定以下になったらリセット
         if (transform.position.y < -100) SceneManager.LoadScene("PlayerMotionTestScene");
     }
@@ -112,7 +106,7 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             //ワイヤー起動
-            PlayerWire.StartWire(groundLayer,gimmickLayer, cameraTransform, cameraBaseTransform);
+            PlayerWire.StartWire(cameraTransform, cameraBaseTransform);
         }
         if (context.canceled)
         {
@@ -137,7 +131,7 @@ public class PlayerController : MonoBehaviour
     }
     public void OnChangeMagic(InputAction.CallbackContext context)
     {
-        if (context.performed) PlayerShooting.ChangeBullet(context.ReadValue<Vector2>().y);
+        if (context.performed) PlayerShooting.ChangeMagic(context.ReadValue<Vector2>().y);
     }
     //
     public bool OnGround

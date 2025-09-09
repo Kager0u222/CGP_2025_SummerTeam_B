@@ -42,6 +42,7 @@ public class PlayerMovement : MonoBehaviour
     }
     public void Jump(Vector3 wallNormalVector,Rigidbody rb)
     {
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
         rb.AddForce(wallNormalVector.x*wallJumpPower,jumpPower + 9.8f * gravityPower / 2,wallNormalVector.z*wallJumpPower, ForceMode.Impulse);
     }
 }

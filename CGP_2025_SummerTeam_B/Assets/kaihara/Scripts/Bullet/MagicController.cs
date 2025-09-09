@@ -3,70 +3,57 @@ using UnityEditor.Callbacks;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class BulletController : MonoBehaviour
+public class MagicController : MonoBehaviour
 {
-    //地面のレイヤーの番号
-    [SerializeField]
-    private int groundLayer;
-    //ギミックのレイヤーの番号
-    [SerializeField]
-    private int gimmickLayer;
-    //敵のレイヤーの番号
-    [SerializeField]
-    private int enemyLayer;
-    //プレイヤーのレイヤーの番号
-    [SerializeField]
-    private int playerLayer;
+    //レイヤーのScriptableObject
+    [SerializeField] private Layers layers;
     //マテリアルの配列
-    [SerializeField] private Material[] bulletMaterials;
+    [SerializeField] private Material[] magicMaterials;
+    
     //rigidbody
     private Rigidbody rb;
     //マテリアル用の変数
-    private Renderer bulletMaterial;
+    private Renderer magicMaterial;
 
     //オブジェクトプールのクラス
-    private BulletPool bulletPool;
+    private MagicPool magicPool;
     //弾の挙動のインスタンスを保存する用の変数
-    private BulletBehavior behavior;
-    //このクラス
-    [SerializeField]private BulletController bulletController;
+    private MagicBehavior behavior;
+    //ステータスのScriptableObjct
+    [SerializeField] private MagicStatuses magicStatuses;
     //Startだとpoolの方で非アクティブ化するため動かないのでAwakeにしている
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        bulletMaterial = GetComponent<Renderer>();
+        magicMaterial = GetComponent<Renderer>();
     }
 
-    //inspectorで設定した情報などを受け渡す必要があるためこちらでOnTriggerEnter
-    void OnTriggerEnter(Collider other)
-    {
-        behavior.Collision(other, groundLayer, enemyLayer, playerLayer, gimmickLayer);
-    }
+
     //弾発射時に呼び出し
-    public void LaunchBullet(Vector3 launchPosition, Quaternion launchRotation, BulletPool.BulletType type, BulletPool pool)
+    public void LaunchMagic(Vector3 launchPosition, Quaternion launchRotation, MagicTypeAsset.MagicType type, MagicPool pool)
     {
         //オブジェクトプールのインスタンスを保存
-        bulletPool = pool;
+        magicPool = pool;
         //発射位置に移動
         transform.position = launchPosition;
         //回転
         transform.rotation = launchRotation;
         //受け取った弾の種類から弾の挙動を決定
-        SetBulletType(type);
+        SetMagicType(type);
         //ステータスや見た目などの初期設定
-        behavior.Launch(bulletController,rb);
+        behavior.Launch(this,rb,layers,type,magicStatuses);
 
     }
     //壁衝突などで呼び出し
-    public void EndBullet()
+    public void EndMagic()
     {
         //behaviorインスタンスの削除
         Destroy(behavior);
         //弾の返還
-        bulletPool.ReturnBullet(bulletController);
+        magicPool.ReturnMagic(this);
     }
     //弾の挙動決定
-    private void SetBulletType(BulletPool.BulletType type)
+    private void SetMagicType(MagicTypeAsset.MagicType type)
     {
         //弾にすでに弾の挙動のインスタンスがあったら消す
         if (behavior != null) Destroy(behavior);
@@ -74,19 +61,24 @@ public class BulletController : MonoBehaviour
         switch (type)
         {
             //プレイヤーの通常の弾
-            case BulletPool.BulletType.PlayerMiddle:
+            case MagicTypeAsset.MagicType.PlayerMiddle:
                 behavior = gameObject.AddComponent<PlayerMiddleBehavior>();
-                bulletMaterial.material = bulletMaterials[0];
+                magicMaterial.material = magicMaterials[0];
                 break;
             //プレイヤーの近距離用の弾
-            case BulletPool.BulletType.PlayerShort:
+            case MagicTypeAsset.MagicType.PlayerShort:
                 behavior = gameObject.AddComponent<PlayerShortBehavior>();
-                bulletMaterial.material = bulletMaterials[1];
+                magicMaterial.material = magicMaterials[1];
                 break;
             //プレイヤーの遠距離用の弾
-            case BulletPool.BulletType.PlayerLong:
+            case MagicTypeAsset.MagicType.PlayerLong:
                 behavior = gameObject.AddComponent<PlayerLongBehavior>();
-                bulletMaterial.material = bulletMaterials[2];
+                magicMaterial.material = magicMaterials[2];
+                break;
+            //敵の普通の弾
+            case MagicTypeAsset.MagicType.EnemyNormal:
+                behavior = gameObject.AddComponent<EnemyNormalBehavior>();
+                magicMaterial.material = magicMaterials[3];
                 break;
         }
     }

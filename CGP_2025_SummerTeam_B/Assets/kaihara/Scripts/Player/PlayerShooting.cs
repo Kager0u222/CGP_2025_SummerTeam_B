@@ -2,32 +2,31 @@ using UnityEngine;
 
 public class PlayerShooting : MonoBehaviour
 {
-
-    //射撃のクールタイム
-    private float fireCoolTime;
-    //弾の射程
-    private float bulletLength;
-    //弾のprefab
-    [SerializeField] private GameObject bulletPrefab;
     //弾の発射位置用オブジェクトの位置取得
-    [SerializeField] private Transform bulletFirePosition;
+    [SerializeField] private Transform magicFirePosition;
     //弾のオブジェクトプール取得
-    [SerializeField] private BulletPool bulletPool;
-
+    [SerializeField] private MagicPool magicPool;
+    //弾のステータスのSprictableObject
+    [SerializeField] private MagicStatuses magicStatuses;
+    //弾のステータス確認に使う変数
+    private IMagicStatus magicStatus;
 
     //前回射撃時の時間保存用変数
     private float lastFiredTime;
     //魔法のタイプ
     private int magicType = 2;
-    //弾のふるまいのクラス
-    private BulletBehavior behavior;
-    
+
+    void Awake()
+    {
+        //魔法のタイプを初期化
+        ChangeMagic(1);
+    }
 
     public void Shoot(int groundLayer, int enemyLayer, Transform cameraTransform, Transform cameraBaseTransform)
     {
 
         //前回射撃時から十分時間がたっていなければ終了
-        if (Time.time - lastFiredTime < fireCoolTime) return;
+        if (Time.time - lastFiredTime < magicStatus.MagicCoolTime) return;
 
         //レイヤーマスクの設定
         LayerMask layerMask = 1 << groundLayer;
@@ -39,16 +38,17 @@ public class PlayerShooting : MonoBehaviour
         RaycastHit hit;
 
         //弾射出先の情報の保存
-        bool isObjectAtAim = Physics.Raycast(ray, out hit, bulletLength, layerMask);
+        bool isObjectAtAim = Physics.Raycast(ray, out hit, magicStatus.MagicLength, layerMask);
         //射程内にオブジェクトなしなら射程ギリギリにオブジェクトがあるときと同じにする
-        if (!isObjectAtAim) hit.point = cameraTransform.position + cameraTransform.forward * bulletLength;
+        if (!isObjectAtAim) hit.point = cameraTransform.position + cameraTransform.forward * magicStatus.MagicLength;
         //弾召喚
-        bulletPool.BorrowBullet(bulletFirePosition.position, Quaternion.LookRotation((hit.point - bulletFirePosition.position).normalized, Vector3.up),(BulletPool.BulletType)magicType);
+        for(int i = 0; i < magicStatus.MagicLaunchCount; i++)
+        magicPool.BorrowMagic(magicFirePosition.position, Quaternion.LookRotation((hit.point - magicFirePosition.position).normalized, Vector3.up), (MagicTypeAsset.MagicType)magicType);
 
         //発射した時間を保存
         lastFiredTime = Time.time;
     }
-    public void ChangeBullet(float input)
+    public void ChangeMagic(float input)
     {
         //マウスホイール上で魔法の番号を増やす
         if (input > 0) magicType += 1;
@@ -57,27 +57,11 @@ public class PlayerShooting : MonoBehaviour
         //ループ
         if (magicType >= 3) magicType = 0;
         if (magicType <= -1) magicType = 2;
-
-        BulletPool.BulletType type;
+        //enum用意
+        MagicTypeAsset.MagicType type;
         //番号をenumに変換
-        type = (BulletPool.BulletType)magicType;
-        //enumに応じてインスタンスをいったん作成
-        switch (type)
-        {
-            case BulletPool.BulletType.PlayerMiddle:
-                behavior = gameObject.AddComponent<PlayerMiddleBehavior>();
-                break;
-            case BulletPool.BulletType.PlayerShort:
-                behavior = gameObject.AddComponent<PlayerShortBehavior>();
-                break;
-            case BulletPool.BulletType.PlayerLong:
-                behavior = gameObject.AddComponent<PlayerLongBehavior>();
-                break;
-        }
-        //必要な変数をプロパティで取得
-        fireCoolTime = behavior.bulletCoolTime;
-        bulletLength = behavior.bulletLength;
-        //インスタンス削除
-        Destroy(behavior);
+        type = (MagicTypeAsset.MagicType)magicType;
+        //enumに応じてステータスを取得
+        magicStatus = magicStatuses.GetStatus(type);
     }
 }

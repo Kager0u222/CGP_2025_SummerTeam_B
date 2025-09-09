@@ -28,6 +28,8 @@ public class PlayerWire : MonoBehaviour
     [SerializeField] private float subWireTensionMaxDistance;
     //ギミックの場合に加える力
     [SerializeField] private float subWireTensionToGimmick;
+    //レイヤーのScriptableObject
+    [SerializeField] private Layers layers;
     //接続中の物体のレイヤーの番号
     private int layerNumber;
     //ワイヤーがつながってる時の情報保存用
@@ -39,11 +41,11 @@ public class PlayerWire : MonoBehaviour
 
 
     //ワイヤー接続
-    public void StartWire(int groundLayer,int gimmickLayer, Transform cameraTransform, Transform cameraBaseTransform)
+    public void StartWire(Transform cameraTransform, Transform cameraBaseTransform)
     {
         //レイヤーマスクの設定
-        LayerMask layerMask = 1 << groundLayer;
-        layerMask += 1 << gimmickLayer;
+        LayerMask layerMask = 1 << layers.GroundLayer;
+        layerMask += 1 << layers.GimmickLayer;
 
         //レイの起点と向きの指定
         Ray ray = new Ray(cameraTransform.position, cameraBaseTransform.forward);
