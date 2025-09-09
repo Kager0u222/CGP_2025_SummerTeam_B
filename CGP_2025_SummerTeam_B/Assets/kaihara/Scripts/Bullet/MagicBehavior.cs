@@ -19,7 +19,9 @@ public abstract class MagicBehavior : MonoBehaviour
     private MagicController magicController;
     //ステータスのScriptableObjct
     private MagicStatuses currentStatuses;
-    public void Launch(MagicController magic, Rigidbody rigidbody, Layers layer, MagicTypeAsset.MagicType type,MagicStatuses statuses)
+    //体力処理のクラス
+    private HpController hpController;
+    public void Launch(MagicController magic, Rigidbody rigidbody, Layers layer, MagicTypeAsset.MagicType type, MagicStatuses statuses)
     {
         //rigidbody
         rb = rigidbody;
@@ -74,7 +76,8 @@ public abstract class MagicBehavior : MonoBehaviour
             magicController.EndMagic();
             //接触後の特殊な判定
             Hit();
-            if (hit.layer == layers.GimmickLayer) return;
+            hpController = hit.gameObject.GetComponent<HpController>();
+            if (hpController != null) hpController.AddDamage(currentStatus.MagicDamage);
         }
 
     }

@@ -33,16 +33,21 @@ public class PlayerMovement : MonoBehaviour
         //空中にいるとき
         else
         {
+            
             rb.AddForce((moveDirection.x * playerSpeed - rb.linearVelocity.x / 4) * moveAddforcePowerinAir, 0, (moveDirection.z * playerSpeed - rb.linearVelocity.z / 4) * moveAddforcePowerinAir);
+            //落下中で壁を触っているときは落下速度に制限をかける
             if (onWall && rb.linearVelocity.y < 0)
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y - 9.8f * gravityPower * Time.fixedDeltaTime, maxFallSpeedOnWall, 100), rb.linearVelocity.z);
+            //
             else
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, rb.linearVelocity.y - 9.8f * gravityPower * Time.fixedDeltaTime, rb.linearVelocity.z);
         }
     }
     public void Jump(Vector3 wallNormalVector,Rigidbody rb)
     {
+        //ワイヤーで上方向に加速しながら壁ジャンプするとすごい勢いで上にすっ飛んでくので縦方向の速度をリセット
         rb.linearVelocity = new Vector3(rb.linearVelocity.x,0,rb.linearVelocity.z);
+        //いい感じに力を加える
         rb.AddForce(wallNormalVector.x*wallJumpPower,jumpPower + 9.8f * gravityPower / 2,wallNormalVector.z*wallJumpPower, ForceMode.Impulse);
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Magic Statuses
   m_EditorClassIdentifier: 
   playerMiddle:
-    magicDamage: 5
+    magicDamage: 3
     magicLength: 100
     magicSpeed: 50
     magicShake: 0.2
@@ -21,7 +21,7 @@ MonoBehaviour:
     magicLaunchCount: 1
     magicIsEnemy: 0
   playerShort:
-    magicDamage: 1
+    magicDamage: 2
     magicLength: 50
     magicSpeed: 150
     magicShake: 7
@@ -29,7 +29,7 @@ MonoBehaviour:
     magicLaunchCount: 8
     magicIsEnemy: 0
   playerLong:
-    magicDamage: 30
+    magicDamage: 35
     magicLength: 100
     magicSpeed: 200
     magicShake: 0
