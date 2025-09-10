@@ -24,9 +24,12 @@ public abstract class HpController : MonoBehaviour
     public void AddDamage(float damage)
     {
         hp -= damage;
+        OnDamage();
         if (hp <= 0) OnDeath();
     }
     //体力ゼロの時の処理
     public abstract void OnDeath();
+    //被ダメージ時の処理
+    public abstract void OnDamage();
 
 }

@@ -24,7 +24,7 @@ MonoBehaviour:
     magicDamage: 2
     magicLength: 50
     magicSpeed: 150
-    magicShake: 7
+    magicShake: 4
     magicCoolTime: 0.5
     magicLaunchCount: 8
     magicIsEnemy: 0

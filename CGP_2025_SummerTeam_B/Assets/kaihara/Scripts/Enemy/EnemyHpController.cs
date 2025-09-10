@@ -6,4 +6,8 @@ public class EnemyHpController : HpController
     {
         Destroy(gameObject);
     }
+    public override void OnDamage()
+    {
+        
+    }
 }

@@ -19,6 +19,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Vector3 cameraFocusLocalPosition;
     //カメラから注視点までの距離
     [SerializeField] private float cameraToFocusDistance;
+    //レイヤーのScriptableObject
+    [SerializeField] private Layers layers;
 
     void Start()
     {
@@ -37,8 +39,10 @@ public class CameraController : MonoBehaviour
         cameraObject.transform.localPosition = new Vector3(0f,0f,cameraToFocusDistance);
         //カメラのめり込みの確認
         RaycastHit hit;
-        int layerMask = 1 << 3;
-        if (Physics.SphereCast(transform.position+transform.forward*0.3f, 1f, cameraObject.transform.position - transform.position - transform.forward*0.3f, out hit, Vector3.Distance(cameraObject.transform.position, transform.position)+0.3f,layerMask))
+        LayerMask layerMask = 1 << layers.GroundLayer;
+        layerMask += 1 << layers.EnemyLayer;
+        layerMask += 1 << layers.GimmickLayer;
+        if (Physics.SphereCast(transform.position, 0.3f, cameraObject.transform.position - transform.position, out hit, Vector3.Distance(cameraObject.transform.position, transform.position) + 0.3f, layerMask))
         {
             transform.position += (-cameraObject.transform.position + transform.position).normalized * Vector3.Distance(cameraObject.transform.position, hit.point);
         }
