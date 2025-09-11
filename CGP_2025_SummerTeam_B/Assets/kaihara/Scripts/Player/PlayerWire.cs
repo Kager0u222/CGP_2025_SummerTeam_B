@@ -5,6 +5,8 @@ public class PlayerWire : MonoBehaviour
 {
     //ワイヤーの長さ
     [SerializeField] private float wireLength;
+    //ワイヤーの長さのプロパティ
+    public float WireLength { get{ return wireLength; } } 
     //ワイヤーの引っ張る強さ
     [SerializeField] private float wireTension;
     //ワイヤーの力の減衰
