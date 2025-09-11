@@ -22,12 +22,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerCollision PlayerCollision;
     //射撃をつかさどるクラス
     [SerializeField] private PlayerShooting PlayerShooting;
+    //ゲームの全体を処理するクラス
+    [SerializeField] private GameMasterController gameMasterController;
 
     //地面のレイヤーの番号
     [SerializeField] private Layers layers;
 
     //カメラ感度
     [SerializeField] private float cameraSensitivity;
+    //バレットタイム時の物理挙動の時間の経過速度
+    [SerializeField, Range(0f, 3f)] private float bulletTimeSpeed;
 
     //player inputからの移動キーの入力保存用
     private Vector2 inputDirection;
@@ -42,9 +46,6 @@ public class PlayerController : MonoBehaviour
     //Rigidbody
     private Rigidbody rb;
 
-    //接触したオブジェクトの保存用変数
-    private Collision collisionObjects;
-
     //壁の法線ベクトル
     private Vector3 wallNormalVector;
     void Start()
@@ -55,51 +56,39 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         //接地判定の確認
-        PlayerCollision.Collision(collisionObjects);
+        PlayerCollision.Collision();
         //移動処理を実行
-        PlayerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall,rb);
+        PlayerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall, rb);
         //ワイヤー展開中の処理
-        PlayerWire.Wire(rb,layers.GroundLayer,layers.GimmickLayer);
+        PlayerWire.Wire(rb, layers.GroundLayer, layers.GimmickLayer);
         //もし射撃中なら射撃
-        if (isFire) PlayerShooting.Shoot(layers.GroundLayer,layers.EnemyLayer,cameraTransform,cameraBaseTransform);
+        if (isFire) PlayerShooting.Shoot(layers.GroundLayer, layers.EnemyLayer, cameraTransform, cameraBaseTransform);
         //y座標が一定以下になったらリセット
         if (transform.position.y < -100) SceneManager.LoadScene("PlayerMotionTestScene");
     }
-
-    //接地判定s
-    private void OnCollisionEnter(Collision collision)
-    {
-        collisionObjects = collision;
-    }
-    private void OnCollisionStay(Collision collision)
-    {
-        collisionObjects = collision;
-    }
-    private void OnCollisionExit(Collision collision)
-    {
-        collisionObjects = null;
-    }
-
+    //移動処理
     //player inputから移動キー入力に紐づけ
     public void OnMove(InputAction.CallbackContext context)
     {
         inputDirection = context.ReadValue<Vector2>();
     }
+    //ジャンプ処理
     //player inputからジャンプキー入力に紐づけ
     public void OnJump(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             //接地判定の確認
-            PlayerCollision.Collision(collisionObjects);
+            PlayerCollision.Collision();
             //地面に接していたらジャンプ
             if (onGround || onWall)
             {
-                PlayerMovement.Jump(wallNormalVector,rb);
+                PlayerMovement.Jump(wallNormalVector, rb);
                 if (onWall) PlayerWire.EndWire();
             }
         }
     }
+    //ワイヤー発射処理
     //player inputからワイヤーのキー入力に紐づけ
     public void OnWire(InputAction.CallbackContext context)
     {
@@ -114,13 +103,16 @@ public class PlayerController : MonoBehaviour
             PlayerWire.EndWire();
         }
     }
+    //魔法発射処理
     //player inputから射撃キー入力に紐づけ
     public void OnFire(InputAction.CallbackContext context)
     {
         if (context.performed) isFire = true;
         if (context.canceled) isFire = false;
     }
-
+    //カメラ操作処理
+    //player inputからカメラ操作に紐づけ
+    //さすがに短いので処理は直接ここに
     public void OnCameraRotate(InputAction.CallbackContext context)
     {
         //マウスの移動量をカメラの回転量に加算
@@ -129,24 +121,38 @@ public class PlayerController : MonoBehaviour
         //上の値をカメラの角度に反映
         cameraBaseTransform.rotation = Quaternion.Euler(-cameraRotation.x, cameraRotation.y, 0);
     }
+    //魔法切り替え処理
+    //player inputから切り替え操作に紐づけ
     public void OnChangeMagic(InputAction.CallbackContext context)
     {
         if (context.performed) PlayerShooting.ChangeMagic(context.ReadValue<Vector2>().y);
     }
-    //
-    public bool OnGround
+    //バレットタイム処理
+    //player inputからバレットタイム操作に紐づけ
+    public void OnBulletTime(InputAction.CallbackContext context)
     {
-        get { return onGround; }
-        set { onGround = value; }
+        //押したときに時間経過減速
+        if (context.performed) gameMasterController.PhysicsSpeedSetter(bulletTimeSpeed);
+        //離したときに時間経過を戻す
+        if (context.canceled) gameMasterController.PhysicsSpeedSetter(1);
     }
-    public bool OnWall
+    
+    //コリジョン系の値の取得変更
+    //取得は簡単に
+    public bool OnGround { get { return onGround; } }
+    public bool OnWall { get { return onWall; } }
+    public Vector3 WallNormalVector { get { return wallNormalVector; } }
+    //変更は安全性のためちょっと回りくどく
+    public void OnGroundSetter(bool value)
     {
-        get { return onWall; }
-        set { onWall = value; }
+        onGround = value;
     }
-    public Vector3 WallNormalVector
+    public void OnWallSetter(bool value)
     {
-        get { return wallNormalVector; }
-        set { wallNormalVector = value; }
+        onWall = value;
+    }
+    public void WallNormalVectorSetter(Vector3 value)
+    {
+        wallNormalVector = value;
     }
 }

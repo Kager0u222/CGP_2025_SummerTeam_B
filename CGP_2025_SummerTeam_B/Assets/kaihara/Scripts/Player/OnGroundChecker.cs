@@ -25,8 +25,5 @@ public class OnGroundChcker : MonoBehaviour
     }
 
     //接触したか否かを受け渡す
-    public bool OnGroundGetter()
-    {
-        return onGround;
-    }
+    public bool OnGround {get { return onGround; }}
 }

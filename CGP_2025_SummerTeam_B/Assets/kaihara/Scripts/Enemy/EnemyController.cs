@@ -5,7 +5,10 @@ public class EnemyController : MonoBehaviour
 {
     //魔法発射用クラス
     [SerializeField] private EnemyShooting enemyShooting;
-
+    //プレイヤーのオブジェクト(BaseControllerから間接的に設定)
+    private GameObject playerObject;
+    //オブジェクトプールのスクリプト(同上)
+    private MagicPool magicPool;
 
     //自分を敵のリストに登録
     public static List<EnemyController> enemys = new List<EnemyController>();
@@ -22,12 +25,14 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        enemyShooting.Fire(Player, magicPool);
+        enemyShooting.Fire(playerObject, magicPool);
     }
-    
-
-    //プレイヤーのオブジェクト(BaseControllerから間接的に設定)
-    public GameObject Player { get; set; }
-    //オブジェクトプールのスクリプト(同上)
-    public MagicPool magicPool { get; set; }
+    public void PlayerSetter(GameObject player)
+    {
+        playerObject = player;
+    }
+    public void MagicPoolSetter(MagicPool pool)
+    {
+        magicPool = pool;
+    }
 }

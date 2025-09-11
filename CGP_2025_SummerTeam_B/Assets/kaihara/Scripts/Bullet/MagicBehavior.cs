@@ -13,15 +13,17 @@ public abstract class MagicBehavior : MonoBehaviour
 
     //弾のステータス確認に使う変数
     private IMagicStatus currentStatus;
-    //弾が発射された時間を保存する
-    private float firedTime;
+    //弾の寿命
+    private float lifeTime;
     //オブジェクトプールとのやり取りをする奴
     private MagicController magicController;
     //ステータスのScriptableObjct
     private MagicStatuses currentStatuses;
     //体力処理のクラス
     private HpController hpController;
-    public void Launch(MagicController magic, Rigidbody rigidbody, Layers layer, MagicTypeAsset.MagicType type, MagicStatuses statuses)
+    //ゲーム全体の処理をするクラス
+    private GameMasterController gameMasterController;
+    public void Launch(MagicController magic, Rigidbody rigidbody, Layers layer, MagicTypeAsset.MagicType type, MagicStatuses statuses, GameMasterController gameMaster)
     {
         //rigidbody
         rb = rigidbody;
@@ -31,10 +33,12 @@ public abstract class MagicBehavior : MonoBehaviour
         layers = layer;
         //magiccontrollerのインスタンス取得
         magicController = magic;
+        //ゲーム全体を処理するクラスを取得
+        gameMasterController = gameMaster;
         //typeから取得すべきステータスのクラスを取得
         currentStatus = currentStatuses.GetStatus(type);
-        //発射された時間を保存
-        firedTime = Time.time;
+        //弾の寿命をリセット
+        lifeTime = currentStatus.MagicLength / currentStatus.MagicSpeed;
         //乱数で向きを調整
         float angleXrmd = Random.Range(-currentStatus.MagicShake / 2, currentStatus.MagicShake / 2);
         float angleYrmd = Random.Range(-currentStatus.MagicShake / 2, currentStatus.MagicShake / 2);
@@ -57,8 +61,10 @@ public abstract class MagicBehavior : MonoBehaviour
         //衝突で衝突処理
         bool magicHit = Physics.SphereCast(transform.position - transform.forward * transform.localScale.z / 2, transform.localScale.x, transform.forward, out hit, currentStatus.MagicSpeed * Time.fixedDeltaTime + transform.localScale.z / 2, layerMask);
         if(magicHit)    Collision(hit.collider.gameObject);
+        //寿命を減少(物理挙動の加減速も加味)
+        lifeTime -= Time.fixedDeltaTime * gameMasterController.PhysicsSpeed;
         //射程分移動で消滅
-        if (Time.time - firedTime > currentStatus.MagicLength / currentStatus.MagicSpeed) magicController.EndMagic();
+        if (lifeTime < 0) magicController.EndMagic();
     }
     void OnTriggerStay(Collider other)
     {

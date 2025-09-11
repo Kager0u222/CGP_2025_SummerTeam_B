@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class PlayerHpController : HpController
 {
     [SerializeField] private HpBarController hpBarController;
+    
     public override void OnDamage()
     {
         hpBarController.OnDamage();

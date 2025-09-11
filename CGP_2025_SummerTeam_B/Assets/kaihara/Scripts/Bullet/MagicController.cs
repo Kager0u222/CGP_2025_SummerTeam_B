@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -9,7 +10,6 @@ public class MagicController : MonoBehaviour
     [SerializeField] private Layers layers;
     //マテリアルの配列
     [SerializeField] private Material[] magicMaterials;
-    
     //rigidbody
     private Rigidbody rb;
     //マテリアル用の変数
@@ -21,11 +21,16 @@ public class MagicController : MonoBehaviour
     private MagicBehavior behavior;
     //ステータスのScriptableObjct
     [SerializeField] private MagicStatuses magicStatuses;
+    //ゲーム全体の処理をするクラス
+    private GameMasterController gameMasterController;
+    //弾のリスト
+    public static List<MagicController> magics = new List<MagicController>();
     //Startだとpoolの方で非アクティブ化するため動かないのでAwakeにしている
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         magicMaterial = GetComponent<Renderer>();
+        magics.Add(this);
     }
 
 
@@ -41,7 +46,7 @@ public class MagicController : MonoBehaviour
         //受け取った弾の種類から弾の挙動を決定
         SetMagicType(type);
         //ステータスや見た目などの初期設定
-        behavior.Launch(this,rb,layers,type,magicStatuses);
+        behavior.Launch(this, rb, layers, type, magicStatuses, gameMasterController);
 
     }
     //壁衝突などで呼び出し
@@ -81,5 +86,9 @@ public class MagicController : MonoBehaviour
                 magicMaterial.material = magicMaterials[3];
                 break;
         }
+    }
+    public void GameMasterSetter(GameMasterController value)
+    {
+        gameMasterController = value;
     }
 }
