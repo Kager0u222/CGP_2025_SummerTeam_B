@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -19,13 +20,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallJumpPower;
     //壁張り付き時の落下速度の最大値
     [SerializeField] private float maxFallSpeedOnWall;
+    //向きの変化速度
+    [SerializeField,Range(0,1)] private float rotationSpeed;
+    //移動方向
+    Vector3 moveDirection;
 
-    public void Move(Vector2 inputDirection,Transform cameraBaseTransform,bool onGround,bool onWall,Rigidbody rb)
+    public void Move(Vector2 inputDirection, Transform cameraBaseTransform, bool onGround, bool onWall, Rigidbody rb,bool isFire,bool isWire)
     {
-        //向いている向きをカメラに合わせる
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, cameraBaseTransform.eulerAngles.y, transform.eulerAngles.z);
-        //入力を変換して視点依存の移動ベクトルに
-        Vector3 moveDirection = transform.forward * inputDirection.y + transform.right * inputDirection.x;
+        if (isFire || isWire ) LockedRotate(inputDirection, cameraBaseTransform);
+        else FreeRotate(inputDirection, cameraBaseTransform);
         //計算後のベクトルに従って力を加える
         //地面にいるとき
         if (onGround)
@@ -33,13 +36,42 @@ public class PlayerMovement : MonoBehaviour
         //空中にいるとき
         else
         {
-            rb.AddForce((moveDirection.x * playerSpeed - rb.linearVelocity.x / 4) * moveAddforcePowerinAir, gravityPower*Physics.gravity.y, (moveDirection.z * playerSpeed - rb.linearVelocity.z / 4) * moveAddforcePowerinAir);
+            rb.AddForce((moveDirection.x * playerSpeed - rb.linearVelocity.x / 4) * moveAddforcePowerinAir, gravityPower * Physics.gravity.y, (moveDirection.z * playerSpeed - rb.linearVelocity.z / 4) * moveAddforcePowerinAir);
             //落下中で壁を触っているときは落下速度に制限をかける
             if (onWall && rb.linearVelocity.y < 0)
                 rb.linearVelocity = new Vector3(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y, maxFallSpeedOnWall, 100), rb.linearVelocity.z);
         }
     }
+    //プレイヤーをキー入力した方向に向かせるタイプの移動
+    private void FreeRotate(Vector2 inputDirection, Transform cameraBaseTransform)
+    {
 
+        //キー入力中は回転方向を計算し回転  そうでなければ向きそのまま
+        if (inputDirection != Vector2.zero)
+        {
+            //カメラの正面と右方向のベクトルを出し、それのy成分を0にして正規化する(カメラの上下の傾きを無視するため)
+            Vector3 cameraForward = cameraBaseTransform.forward;
+            Vector3 cameraRight = cameraBaseTransform.right;
+            cameraForward = new Vector3(cameraForward.x, 0f, cameraForward.z).normalized;
+            cameraRight = new Vector3(cameraRight.x, 0f, cameraRight.z).normalized;
+            //入力から向く方向を決定
+            Vector3 direction = cameraForward * inputDirection.y + cameraRight * inputDirection.x;
+            //回転(現在地から入力方向へ線形補完)
+            transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, direction.normalized, rotationSpeed), Vector3.up);
+        }
+        //x,z軸中心の回転を0に
+        transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+        //移動方向(オブジェクトの正面方向)
+        moveDirection = transform.forward * inputDirection.magnitude;
+    }
+    //プレイヤーの向きをカメラに合わせるタイプの移動
+    private void LockedRotate(Vector2 inputDirection,Transform cameraBaseTransform)
+    {
+        //向いている向きをカメラに合わせる
+        transform.eulerAngles = new Vector3(0, cameraBaseTransform.eulerAngles.y,0);
+        //入力を変換して視点依存の移動ベクトルに
+        moveDirection = transform.forward * inputDirection.y + transform.right * inputDirection.x;
+    }
     public void Jump(Vector3 wallNormalVector, Rigidbody rb)
     {
         //ワイヤーで上方向に加速しながら壁ジャンプするとすごい勢いで上にすっ飛んでくので縦方向の速度をリセット

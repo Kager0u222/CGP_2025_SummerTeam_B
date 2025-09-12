@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     private bool onWall = false;
     //射撃中か否かを判定するbool変数
     private bool isFire = false;
+    //ワイヤー接続中か否か
+    private bool isWire = false;
     //Rigidbody
     private Rigidbody rb;
 
@@ -58,7 +60,7 @@ public class PlayerController : MonoBehaviour
         //接地判定の確認
         PlayerCollision.Collision();
         //移動処理を実行
-        PlayerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall, rb);
+        PlayerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall, rb,isFire,isWire);
         //ワイヤー展開中の処理
         PlayerWire.Wire(rb, layers.GroundLayer, layers.GimmickLayer);
         //もし射撃中なら射撃
@@ -96,11 +98,13 @@ public class PlayerController : MonoBehaviour
         {
             //ワイヤー起動
             PlayerWire.StartWire(cameraTransform, cameraBaseTransform);
+            isWire = true;
         }
         if (context.canceled)
         {
             //ワイヤー切断
             PlayerWire.EndWire();
+            isWire = false;
         }
     }
     //魔法発射処理
