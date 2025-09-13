@@ -1,6 +1,8 @@
 using System.Data;
 using System.Runtime.CompilerServices;
+using Microsoft.Unity.VisualStudio.Editor;
 using NUnit.Framework.Internal.Execution;
+using TMPro;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -15,24 +17,25 @@ public class PlayerController : MonoBehaviour
     //カメラの位置を取得する
     [SerializeField] private Transform cameraTransform;
     //プレイヤーの移動をつかさどるクラス
-    [SerializeField] private PlayerMovement PlayerMovement;
+    [SerializeField] private PlayerMovement playerMovement;
     //ワイヤー関連をつかさどるクラス
-    [SerializeField] private PlayerWire PlayerWire;
+    [SerializeField] private PlayerWire playerWire;
     //コリジョン処理をつかさどるクラス
     [SerializeField] private PlayerCollision PlayerCollision;
     //射撃をつかさどるクラス
-    [SerializeField] private PlayerShooting PlayerShooting;
+    [SerializeField] private PlayerShooting playerShooting;
+    //バレットタイムをつかさどるクラス
+    [SerializeField] private PlayerBulletTime playerBulletTime;
     //ゲームの全体を処理するクラス
     [SerializeField] private GameMasterController gameMasterController;
 
     //地面のレイヤーの番号
     [SerializeField] private Layers layers;
-
+    //魔法表示UIのTransform
+    [SerializeField] private Transform magicUITransform;
     //カメラ感度
     [SerializeField] private float cameraSensitivity;
-    //バレットタイム時の物理挙動の時間の経過速度
-    [SerializeField, Range(0f, 3f)] private float bulletTimeSpeed;
-
+    
     //player inputからの移動キーの入力保存用
     private Vector2 inputDirection;
 
@@ -45,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private bool isFire = false;
     //ワイヤー接続中か否か
     private bool isWire = false;
+
     //Rigidbody
     private Rigidbody rb;
 
@@ -53,6 +57,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        playerBulletTime.gameMasterSetter(gameMasterController);
     }
 
     void FixedUpdate()
@@ -60,13 +65,17 @@ public class PlayerController : MonoBehaviour
         //接地判定の確認
         PlayerCollision.Collision();
         //移動処理を実行
-        PlayerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall, rb,isFire,isWire);
+        playerMovement.Move(inputDirection, cameraBaseTransform, onGround, onWall, rb, isFire, isWire, gameMasterController);
         //ワイヤー展開中の処理
-        PlayerWire.Wire(rb, layers.GroundLayer, layers.GimmickLayer);
+        playerWire.Wire(rb, layers.GroundLayer, layers.GimmickLayer);
         //もし射撃中なら射撃
-        if (isFire) PlayerShooting.Shoot(layers.GroundLayer, layers.EnemyLayer, cameraTransform, cameraBaseTransform);
+        if (isFire) playerShooting.Shoot(layers.GroundLayer, layers.EnemyLayer, cameraTransform, cameraBaseTransform);
+        //射撃クールタイムを減少
+        playerShooting.LifeTimeDecreaser(Time.fixedDeltaTime * gameMasterController.PhysicsSpeed);
         //y座標が一定以下になったらリセット
         if (transform.position.y < -100) SceneManager.LoadScene("PlayerMotionTestScene");
+        
+
     }
     //移動処理
     //player inputから移動キー入力に紐づけ
@@ -85,8 +94,8 @@ public class PlayerController : MonoBehaviour
             //地面に接していたらジャンプ
             if (onGround || onWall)
             {
-                PlayerMovement.Jump(wallNormalVector, rb);
-                if (onWall) PlayerWire.EndWire();
+                playerMovement.Jump(wallNormalVector, rb);
+                if (onWall) playerWire.EndWire();
             }
         }
     }
@@ -97,13 +106,13 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             //ワイヤー起動
-            PlayerWire.StartWire(cameraTransform, cameraBaseTransform);
+            playerWire.StartWire(cameraTransform, cameraBaseTransform);
             isWire = true;
         }
         if (context.canceled)
         {
             //ワイヤー切断
-            PlayerWire.EndWire();
+            playerWire.EndWire();
             isWire = false;
         }
     }
@@ -129,16 +138,17 @@ public class PlayerController : MonoBehaviour
     //player inputから切り替え操作に紐づけ
     public void OnChangeMagic(InputAction.CallbackContext context)
     {
-        if (context.performed) PlayerShooting.ChangeMagic(context.ReadValue<Vector2>().y);
+        if (context.performed ) playerShooting.ChangeMagic(context.ReadValue<Vector2>().y);
     }
     //バレットタイム処理
     //player inputからバレットタイム操作に紐づけ
     public void OnBulletTime(InputAction.CallbackContext context)
     {
         //押したときに時間経過減速
-        if (context.performed) gameMasterController.PhysicsSpeedSetter(bulletTimeSpeed);
-        //離したときに時間経過を戻す
-        if (context.canceled) gameMasterController.PhysicsSpeedSetter(1);
+        if (context.performed) playerBulletTime.BulletTimeStart();
+
+        //バレットタイム中なら離したときに時間経過を戻す
+        if (context.canceled) playerBulletTime.BulletTimeCancel();
     }
     
     //コリジョン系の値の取得変更

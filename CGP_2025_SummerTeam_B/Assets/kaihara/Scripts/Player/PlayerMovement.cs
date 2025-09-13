@@ -1,3 +1,4 @@
+
 using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -22,13 +23,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxFallSpeedOnWall;
     //向きの変化速度
     [SerializeField,Range(0,1)] private float rotationSpeed;
+    //カメラ正面を向くときの向きの変化速度
+    [SerializeField,Range(0,1)] private float rotationSpeedCameraForward;
     //移動方向
     Vector3 moveDirection;
 
-    public void Move(Vector2 inputDirection, Transform cameraBaseTransform, bool onGround, bool onWall, Rigidbody rb,bool isFire,bool isWire)
+    public void Move(Vector2 inputDirection, Transform cameraBaseTransform, bool onGround, bool onWall, Rigidbody rb,bool isFire,bool isWire,GameMasterController gameMaster)
     {
-        if (isFire || isWire ) LockedRotate(inputDirection, cameraBaseTransform);
-        else FreeRotate(inputDirection, cameraBaseTransform);
+        if (isFire || isWire ) LockedRotate(inputDirection, cameraBaseTransform, gameMaster);
+        else FreeRotate(inputDirection, cameraBaseTransform, gameMaster);
         //計算後のベクトルに従って力を加える
         //地面にいるとき
         if (onGround)
@@ -43,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     //プレイヤーをキー入力した方向に向かせるタイプの移動
-    private void FreeRotate(Vector2 inputDirection, Transform cameraBaseTransform)
+    private void FreeRotate(Vector2 inputDirection, Transform cameraBaseTransform,GameMasterController gameMaster)
     {
 
         //キー入力中は回転方向を計算し回転  そうでなければ向きそのまま
@@ -57,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
             //入力から向く方向を決定
             Vector3 direction = cameraForward * inputDirection.y + cameraRight * inputDirection.x;
             //回転(現在地から入力方向へ線形補完)
-            transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, direction.normalized, rotationSpeed), Vector3.up);
+            transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, direction.normalized, rotationSpeed*gameMaster.PhysicsSpeed), Vector3.up);
         }
         //x,z軸中心の回転を0に
         transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
@@ -65,10 +68,10 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = transform.forward * inputDirection.magnitude;
     }
     //プレイヤーの向きをカメラに合わせるタイプの移動
-    private void LockedRotate(Vector2 inputDirection,Transform cameraBaseTransform)
+    private void LockedRotate(Vector2 inputDirection,Transform cameraBaseTransform,GameMasterController gameMaster)
     {
         //向いている向きをカメラに合わせる
-        transform.eulerAngles = new Vector3(0, cameraBaseTransform.eulerAngles.y,0);
+        transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.Euler(0, cameraBaseTransform.eulerAngles.y,0),rotationSpeedCameraForward*gameMaster.PhysicsSpeed);
         //入力を変換して視点依存の移動ベクトルに
         moveDirection = transform.forward * inputDirection.y + transform.right * inputDirection.x;
     }

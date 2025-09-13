@@ -8,11 +8,13 @@ public class PlayerShooting : MonoBehaviour
     [SerializeField] private MagicPool magicPool;
     //弾のステータスのSprictableObject
     [SerializeField] private MagicStatuses magicStatuses;
+    //魔法表示UIのクラス
+    [SerializeField] private MagicUIController magicUIController;
     //弾のステータス確認に使う変数
     private IMagicStatus magicStatus;
 
     //前回射撃時の時間保存用変数
-    private float lastFiredTime;
+    private float lifeTime;
     //魔法のタイプ
     private int magicType = 2;
 
@@ -26,7 +28,7 @@ public class PlayerShooting : MonoBehaviour
     {
 
         //前回射撃時から十分時間がたっていなければ終了
-        if (Time.time - lastFiredTime < magicStatus.MagicCoolTime) return;
+        if (lifeTime > 0) return;
 
         //レイヤーマスクの設定
         LayerMask layerMask = 1 << groundLayer;
@@ -42,18 +44,16 @@ public class PlayerShooting : MonoBehaviour
         //射程内にオブジェクトなしなら射程ギリギリにオブジェクトがあるときと同じにする
         if (!isObjectAtAim) hit.point = cameraTransform.position + cameraTransform.forward * magicStatus.MagicLength;
         //弾召喚
-        for(int i = 0; i < magicStatus.MagicLaunchCount; i++)
-        magicPool.BorrowMagic(magicFirePosition.position, Quaternion.LookRotation((hit.point - magicFirePosition.position).normalized, Vector3.up), (MagicTypeAsset.MagicType)magicType);
+        for (int i = 0; i < magicStatus.MagicLaunchCount; i++)
+            magicPool.BorrowMagic(magicFirePosition.position, Quaternion.LookRotation((hit.point - magicFirePosition.position).normalized, Vector3.up), (MagicTypeAsset.MagicType)magicType);
 
         //発射した時間を保存
-        lastFiredTime = Time.time;
+        lifeTime = magicStatus.MagicCoolTime;
     }
     public void ChangeMagic(float input)
     {
-        //マウスホイール上で魔法の番号を増やす
-        if (input > 0) magicType += 1;
-        //逆
-        else magicType -= 1;
+        //マウスホイールで魔法の番号を変更
+        magicType += Mathf.FloorToInt(input/Mathf.Abs(input));
         //ループ
         if (magicType >= 3) magicType = 0;
         if (magicType <= -1) magicType = 2;
@@ -63,5 +63,11 @@ public class PlayerShooting : MonoBehaviour
         type = (MagicTypeAsset.MagicType)magicType;
         //enumに応じてステータスを取得
         magicStatus = magicStatuses.GetStatus(type);
+        //UI切り替え
+        //magicUIController.ChangeMagic(Mathf.FloorToInt(input/Mathf.Abs(input)));
+    }
+    public void LifeTimeDecreaser(float value)
+    {
+        lifeTime -= value;
     }
 }

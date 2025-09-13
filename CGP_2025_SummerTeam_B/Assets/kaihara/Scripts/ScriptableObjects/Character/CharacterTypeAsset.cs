@@ -6,6 +6,7 @@ public class CharacterTypeAsset : ScriptableObject
     public enum CharacterType
     {
         Player,
-        Enemy1
+        Enemy1,
+        Enemy2
     }
 }

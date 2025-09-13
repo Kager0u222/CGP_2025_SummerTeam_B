@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyShooting : MonoBehaviour 
+public class EnemyShooting : MonoBehaviour
 {
     //レイヤーのScriptableObject
     [SerializeField] Layers layers;
@@ -12,17 +12,15 @@ public class EnemyShooting : MonoBehaviour
     //弾のステータス確認に使う変数
     private IMagicStatus magicStatus;
     //射撃時の時刻保存用
-    private float lastFiredTime = 0;
+    private float lifeTime = 0;
     private void Awake()
     {
         magicStatus = magicStatuses.GetStatus(magicType);
     }
     public void Fire(GameObject Player, MagicPool magicPool)
     {
-        //射撃タイミングのブレ
-        float rmd = Random.Range(-0.1f, 0.1f);
         //前回射撃時から十分時間がたっていなければ終了
-        if (Time.time - lastFiredTime < magicStatus.MagicCoolTime * (1 + rmd)) return;
+        if (lifeTime > 0) return;
 
         //レイヤーマスクの設定
         LayerMask layerMask = 1 << layers.PlayerLayer;
@@ -43,6 +41,11 @@ public class EnemyShooting : MonoBehaviour
             magicPool.BorrowMagic(transform.position + Vector3.up * 0.5f, Quaternion.LookRotation((hit.point - (transform.position + Vector3.up * 0.5f)).normalized, Vector3.up), magicType);
 
         //発射した時間を保存
-        lastFiredTime = Time.time;
+        lifeTime = magicStatus.MagicCoolTime;
     }
+    public void LifeTimeDecreaser(float value)
+    {
+        lifeTime -= value;
+    }
+    public float MagicLength {get { return magicStatus.MagicLength; }}
 }

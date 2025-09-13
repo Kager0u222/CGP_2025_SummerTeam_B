@@ -85,6 +85,11 @@ public class MagicController : MonoBehaviour
                 behavior = gameObject.AddComponent<EnemyNormalBehavior>();
                 magicMaterial.material = magicMaterials[3];
                 break;
+            //敵の短射程の弾
+            case MagicTypeAsset.MagicType.EnemyShort:
+                behavior = gameObject.AddComponent<EnemyShortBehavior>();
+                magicMaterial.material = magicMaterials[3];
+                break;
         }
     }
     public void GameMasterSetter(GameMasterController value)

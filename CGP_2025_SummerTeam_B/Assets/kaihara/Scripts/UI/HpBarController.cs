@@ -40,14 +40,20 @@ public class HpBarController : MonoBehaviour
             hpDamage.fillAmount -= redGaugeDecreace;
         //赤ゲージが減少しすぎたら緑ゲージと同じにする
         if (hpGauge.fillAmount > hpDamage.fillAmount) hpDamage.fillAmount = hpGauge.fillAmount;
-        //Hpの表記と実際のHpに乖離があるとき
-        if (hp != playerHpController.Hp)
+        //Hpの表記が実際のHpより多いとき
+        if (hp > playerHpController.Hp)
         {
             //表記Hpを実際のHpに近づける
             hp += hpDataChangeSpeed * (playerHpController.Hp - hp) / Mathf.Abs(playerHpController.Hp - hp);
             //小数点以下切り捨てで表記に反映
             hpData.text = Mathf.Floor(hp) + "/" + playerHpController.HpMax;
             if (Mathf.Abs(playerHpController.Hp - hp) < hpDataChangeSpeed) hp = playerHpController.Hp;
+        }
+        //Hpの表記が実際のHPより小さいときはすぐに反映
+        if (hp < playerHpController.Hp)
+        {
+            hp = playerHpController.Hp;
+            hpData.text = Mathf.Floor(hp) + "/" + playerHpController.HpMax;
         }
     }
     //体力バー更新用

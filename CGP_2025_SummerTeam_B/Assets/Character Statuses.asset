@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerStatus:
     hpmax: 100
-  enemyStatus:
+  enemy1Status:
     hpmax: 30
+  enemy2Status:
+    hpmax: 20

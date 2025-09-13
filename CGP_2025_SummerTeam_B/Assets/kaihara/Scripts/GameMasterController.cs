@@ -19,9 +19,10 @@ public class GameMasterController : MonoBehaviour
     {
         foreach (EnemyController enemy in EnemyController.enemys)
         {
-            //敵にプレイヤーのオブジェクトと魔法のpoolの情報を渡す
+            //敵にプレイヤーのオブジェクトと魔法のpoolとこのクラスを渡す
             enemy.PlayerSetter(player);
             enemy.MagicPoolSetter(magicPool);
+            enemy.GameMasterSetter(this);
         }
 
         foreach (MagicController magic in MagicController.magics)

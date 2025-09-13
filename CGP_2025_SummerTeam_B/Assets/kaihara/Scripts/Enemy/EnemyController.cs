@@ -5,10 +5,18 @@ public class EnemyController : MonoBehaviour
 {
     //魔法発射用クラス
     [SerializeField] private EnemyShooting enemyShooting;
+    //個別挙動用クラス
+    [SerializeField] private EnemyMove enemyMove;
+    //レイヤーのScriptableObject
+    [SerializeField] private Layers layers;
     //プレイヤーのオブジェクト(BaseControllerから間接的に設定)
     private GameObject playerObject;
     //オブジェクトプールのスクリプト(同上)
     private MagicPool magicPool;
+    //全体の処理をするクラス
+    private GameMasterController gameMaster;
+    //魔法の射程
+    private float magicLength;
 
     //自分を敵のリストに登録
     public static List<EnemyController> enemys = new List<EnemyController>();
@@ -16,6 +24,7 @@ public class EnemyController : MonoBehaviour
     void Awake()
     {
         enemys.Add(this);
+        magicLength = enemyShooting.MagicLength;
     }
     void OnDestroy()
     {
@@ -25,7 +34,13 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        //発射処理
         enemyShooting.Fire(playerObject, magicPool);
+        //クールタイム減少
+        enemyShooting.LifeTimeDecreaser(Time.fixedDeltaTime * gameMaster.PhysicsSpeed);
+        //個別の挙動
+        if(enemyMove != null)
+        enemyMove.Move(layers,playerObject,magicLength);
     }
     public void PlayerSetter(GameObject player)
     {
@@ -35,4 +50,9 @@ public class EnemyController : MonoBehaviour
     {
         magicPool = pool;
     }
+    public void GameMasterSetter(GameMasterController master)
+    {
+        gameMaster = master;
+    }
+
 }

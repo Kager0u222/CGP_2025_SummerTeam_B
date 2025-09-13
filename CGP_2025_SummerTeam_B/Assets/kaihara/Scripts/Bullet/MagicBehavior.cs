@@ -85,7 +85,6 @@ public abstract class MagicBehavior : MonoBehaviour
             hpController = hit.gameObject.GetComponent<HpController>();
             if (hpController != null) hpController.AddDamage(currentStatus.MagicDamage);
         }
-
     }
 
 

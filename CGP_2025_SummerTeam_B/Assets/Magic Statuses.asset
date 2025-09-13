@@ -16,7 +16,7 @@ MonoBehaviour:
     magicDamage: 3
     magicLength: 100
     magicSpeed: 50
-    magicShake: 0.2
+    magicShake: 1
     magicCoolTime: 0.1
     magicLaunchCount: 1
     magicIsEnemy: 0
@@ -24,12 +24,12 @@ MonoBehaviour:
     magicDamage: 2
     magicLength: 50
     magicSpeed: 150
-    magicShake: 4
+    magicShake: 5
     magicCoolTime: 0.5
     magicLaunchCount: 8
     magicIsEnemy: 0
   playerLong:
-    magicDamage: 35
+    magicDamage: 30
     magicLength: 100
     magicSpeed: 200
     magicShake: 0
@@ -40,7 +40,15 @@ MonoBehaviour:
     magicDamage: 3
     magicLength: 100
     magicSpeed: 50
-    magicShake: 1
-    magicCoolTime: 0.5
+    magicShake: 0.1
+    magicCoolTime: 0.3
     magicLaunchCount: 1
+    magicIsEnemy: 1
+  enemyShort:
+    magicDamage: 2
+    magicLength: 50
+    magicSpeed: 150
+    magicShake: 5
+    magicCoolTime: 0.5
+    magicLaunchCount: 4
     magicIsEnemy: 1

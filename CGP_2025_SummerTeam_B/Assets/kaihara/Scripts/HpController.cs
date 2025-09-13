@@ -25,6 +25,7 @@ public abstract class HpController : MonoBehaviour
     {
         hp -= damage;
         OnDamage();
+        if (hp > status.HpMax) hp = status.HpMax;
         if (hp <= 0) OnDeath();
     }
     //体力ゼロの時の処理
