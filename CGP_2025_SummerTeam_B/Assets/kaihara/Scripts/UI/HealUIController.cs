@@ -21,7 +21,7 @@ public class HealUIController : MonoBehaviour
         healCount = count;
         healLimit = limit;
         //回数を数字で表示
-        healCounter.text = healCount.ToString();
+        healCounter.text = "×" + healCount.ToString();
 
     }
     public void Update()

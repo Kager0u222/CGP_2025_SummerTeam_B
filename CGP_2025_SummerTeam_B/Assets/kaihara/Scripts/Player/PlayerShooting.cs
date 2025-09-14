@@ -64,7 +64,7 @@ public class PlayerShooting : MonoBehaviour
         //enumに応じてステータスを取得
         magicStatus = magicStatuses.GetStatus(type);
         //UI切り替え
-        //magicUIController.ChangeMagic(Mathf.FloorToInt(input/Mathf.Abs(input)));
+        magicUIController.ChangeMagic(Mathf.FloorToInt(input/Mathf.Abs(input)));
     }
     public void LifeTimeDecreaser(float value)
     {
