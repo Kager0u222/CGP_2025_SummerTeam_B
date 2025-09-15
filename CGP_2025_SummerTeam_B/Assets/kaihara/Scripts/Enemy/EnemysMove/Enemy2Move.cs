@@ -10,7 +10,7 @@ public class Enemy2Move : EnemyMove
     //移動処理のaddforceの倍率
     [SerializeField] private float moveAddforcePower;
 
-    public override void Move(Layers layers, GameObject player, float magicLength)
+    public override void Move(Layers layers, GameObject player, float magicLength,GameMasterController master)
     {
         //プレイヤーとの距離の二乗を取得
         float sqrDistance = Vector3.SqrMagnitude(player.transform.position - transform.position);

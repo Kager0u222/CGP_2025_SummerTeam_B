@@ -40,7 +40,7 @@ public class EnemyController : MonoBehaviour
         enemyShooting.LifeTimeDecreaser(Time.fixedDeltaTime * gameMaster.PhysicsSpeed);
         //個別の挙動
         if(enemyMove != null)
-        enemyMove.Move(layers,playerObject,magicLength);
+        enemyMove.Move(layers,playerObject,magicLength,gameMaster);
     }
     public void PlayerSetter(GameObject player)
     {

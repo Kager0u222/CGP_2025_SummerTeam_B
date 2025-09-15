@@ -7,6 +7,7 @@ public class CharacterTypeAsset : ScriptableObject
     {
         Player,
         Enemy1,
-        Enemy2
+        Enemy2,
+        Enemy3
     }
 }

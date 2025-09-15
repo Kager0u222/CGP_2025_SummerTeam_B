@@ -13,22 +13,28 @@ public class PlayerShooting : MonoBehaviour
     //弾のステータス確認に使う変数
     private IMagicStatus magicStatus;
 
-    //前回射撃時の時間保存用変数
-    private float lifeTime;
+    //残りクールタイム変数
+    private float coolTime;
+    //↑のゲッター
+    public float CoolTime {get{ return coolTime; }}
     //魔法のタイプ
-    private int magicType = 2;
+    private int magicType = 0;
+    //魔法のクールタイムのゲッター
+    public float MagicCoolTIme {get { return magicStatus.MagicCoolTime; }}
 
     void Awake()
     {
         //魔法のタイプを初期化
-        ChangeMagic(1);
+        magicStatus = magicStatuses.GetStatus(MagicTypeAsset.MagicType.PlayerMiddle);
+        //このクラスをUIのクラスに渡す
+        magicUIController.Shooting(this);
     }
 
     public void Shoot(int groundLayer, int enemyLayer, Transform cameraTransform, Transform cameraBaseTransform)
     {
 
         //前回射撃時から十分時間がたっていなければ終了
-        if (lifeTime > 0) return;
+        if (coolTime > 0) return;
 
         //レイヤーマスクの設定
         LayerMask layerMask = 1 << groundLayer;
@@ -48,7 +54,7 @@ public class PlayerShooting : MonoBehaviour
             magicPool.BorrowMagic(magicFirePosition.position, Quaternion.LookRotation((hit.point - magicFirePosition.position).normalized, Vector3.up), (MagicTypeAsset.MagicType)magicType);
 
         //発射した時間を保存
-        lifeTime = magicStatus.MagicCoolTime;
+        coolTime = magicStatus.MagicCoolTime;
     }
     public void ChangeMagic(float input)
     {
@@ -68,6 +74,6 @@ public class PlayerShooting : MonoBehaviour
     }
     public void LifeTimeDecreaser(float value)
     {
-        lifeTime -= value;
+        coolTime -= value;
     }
 }

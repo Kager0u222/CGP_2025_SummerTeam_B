@@ -8,5 +8,5 @@ public abstract class EnemyMove : MonoBehaviour
     {
         rb = gameObject.GetComponent<Rigidbody>();
     }
-    public abstract void Move(Layers layers, GameObject player, float magicLength);
+    public abstract void Move(Layers layers, GameObject player, float magicLength,GameMasterController master);
 }
