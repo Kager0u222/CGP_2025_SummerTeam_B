@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "New Data",menuName = "StoryData")]
 public class StoryData : MonoBehaviour
 {
     public List<Story> stories = new List<Story>();
@@ -17,12 +18,12 @@ public class StoryData : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
