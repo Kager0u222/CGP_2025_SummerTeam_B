@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Data",menuName = "StoryData")]
-public class StoryData : MonoBehaviour
+public class StoryData : ScriptableObject
 {
     public List<Story> stories = new List<Story>();
 
