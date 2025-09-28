@@ -12,6 +12,13 @@ public class PlayerHpController : HpController
     [SerializeField] private float healAmount;
     //回復回数とかの表示のUIのクラス
     [SerializeField] private HealUIController healUIController;
+    //回復効果音
+    [SerializeField] private AudioClip healSE;
+    //プレイヤーの音流すやつ
+    [SerializeField] private PlayerAudio playerAudio;
+    //ゲーム全体の処理をするクラス
+    [SerializeField] private GameMasterController gameMaster;
+
     //残り回復可能回数 
     private int canHealCount;
     private void Start()
@@ -26,7 +33,7 @@ public class PlayerHpController : HpController
     }
     public override void OnDeath()
     {
-        SceneManager.LoadScene("PlayerMotionTestScene");
+        gameMaster.StartLoadScene();
     }
     public void OnHeal(InputAction.CallbackContext context)
     {
@@ -35,8 +42,9 @@ public class PlayerHpController : HpController
             AddDamage(-healAmount);
             canHealCount -= 1;
             //表示の変更
-            Debug.Log(canHealCount + " " + canHealLimit);
             healUIController.ChangeGauge(canHealCount, canHealLimit);
+            //回復音
+            playerAudio.PlaySE(healSE);
         }
     }
 }

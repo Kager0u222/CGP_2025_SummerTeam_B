@@ -5,17 +5,17 @@ public class BulletTimeUIController : MonoBehaviour
 {
     //ゲージのImage
     [SerializeField] private Image bulletTimeUI;
-    //ゲージ用のスプライト
-    [SerializeField] private Sprite[] sprites;
+    //ゲージ用のカラー
+    [SerializeField] private Color[] color;
 
     public void ChangeGauge(float bulletTimeCharge, float bulletTimeMax, bool isRecharging)
     {
         //ゲージを変動
         bulletTimeUI.fillAmount = bulletTimeCharge / bulletTimeMax;
         //リチャージ中色変える
-        if (isRecharging) bulletTimeUI.sprite = sprites[1];
+        if (isRecharging) bulletTimeUI.color = color[1];
         //チャージがマックスなら色変える
-        if(bulletTimeCharge >= bulletTimeMax) bulletTimeUI.sprite = sprites[0];
+        if(bulletTimeCharge >= bulletTimeMax) bulletTimeUI.color = color[0];
 
     }
 }

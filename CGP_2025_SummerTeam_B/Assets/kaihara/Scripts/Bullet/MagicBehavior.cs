@@ -23,7 +23,7 @@ public abstract class MagicBehavior : MonoBehaviour
     private HpController hpController;
     //ゲーム全体の処理をするクラス
     private GameMasterController gameMasterController;
-    public void Launch(MagicController magic, Rigidbody rigidbody, Layers layer, MagicTypeAsset.MagicType type, MagicStatuses statuses, GameMasterController gameMaster)
+    public void Launch(MagicController magic, Rigidbody rigidbody, Layers layer, MagicTypeAsset.MagicType type, MagicStatuses statuses, GameMasterController gameMaster, ParticleSystem particle,ParticleSystemRenderer particleRenderer)
     {
         //rigidbody
         rb = rigidbody;
@@ -45,7 +45,8 @@ public abstract class MagicBehavior : MonoBehaviour
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + angleXrmd, transform.rotation.eulerAngles.y + angleYrmd, transform.rotation.eulerAngles.z);
         //移動速度設定
         rb.linearVelocity = transform.forward * currentStatus.MagicSpeed;
-
+        //その他開始時処理
+        First(particle,particleRenderer);
     }
 
     void FixedUpdate()
@@ -58,6 +59,7 @@ public abstract class MagicBehavior : MonoBehaviour
         layerMask += 1 << layers.PlayerLayer;
         layerMask += 1 << layers.GroundLayer;
         layerMask += 1 << layers.GimmickLayer;
+        layerMask += 1 << layers.BarrierLayer;
         //衝突で衝突処理
         bool magicHit = Physics.SphereCast(transform.position - transform.forward * transform.localScale.z / 2, transform.localScale.x, transform.forward, out hit, currentStatus.MagicSpeed * Time.fixedDeltaTime + transform.localScale.z / 2, layerMask);
         if(magicHit)    Collision(hit.collider.gameObject);
@@ -73,7 +75,7 @@ public abstract class MagicBehavior : MonoBehaviour
     public void Collision(GameObject hit)
     {
         //地面に触れたら消滅
-        if (hit.layer == layers.GroundLayer) magicController.EndMagic();
+        if (hit.layer == layers.GroundLayer || hit.layer == layers.BarrierLayer) magicController.EndMagic();
 
         //自分の弾が敵もしくはギミックに触れたらもしくは敵の弾が自分に触れたら
         if (((hit.layer == layers.EnemyLayer || hit.layer == layers.GimmickLayer) && !currentStatus.MagicIsEnemy) || (currentStatus.MagicIsEnemy && hit.layer == layers.PlayerLayer))
@@ -87,7 +89,7 @@ public abstract class MagicBehavior : MonoBehaviour
         }
     }
 
-
+    public abstract void First(ParticleSystem particle,ParticleSystemRenderer renderer);
     public abstract void Movement();
 
     public abstract void Hit();

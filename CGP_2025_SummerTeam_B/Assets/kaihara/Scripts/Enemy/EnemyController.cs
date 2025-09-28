@@ -1,14 +1,19 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
     //魔法発射用クラス
     [SerializeField] private EnemyShooting enemyShooting;
+    //体力処理
+    [SerializeField] private EnemyHpController enemyHpController;
     //個別挙動用クラス
     [SerializeField] private EnemyMove enemyMove;
     //レイヤーのScriptableObject
     [SerializeField] private Layers layers;
+    //見た目のやつ
+    [SerializeField] private GameObject model;
     //プレイヤーのオブジェクト(BaseControllerから間接的に設定)
     private GameObject playerObject;
     //オブジェクトプールのスクリプト(同上)
@@ -38,13 +43,22 @@ public class EnemyController : MonoBehaviour
         enemyShooting.Fire(playerObject, magicPool);
         //クールタイム減少
         enemyShooting.LifeTimeDecreaser(Time.fixedDeltaTime * gameMaster.PhysicsSpeed);
+        //モデル動かす（プレイヤー方向へ滑らかに回転）
+        if((playerObject.transform.position - model.transform.position).sqrMagnitude < Mathf.Pow(magicLength, 2))
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(playerObject.transform.position - model.transform.position, Vector3.up);
+            model.transform.rotation = Quaternion.Slerp(model.transform.rotation, targetRotation, 0.2f);
+        }
         //個別の挙動
-        if(enemyMove != null)
-        enemyMove.Move(layers,playerObject,magicLength,gameMaster);
+        if (enemyMove != null)
+            enemyMove.Move(layers, playerObject, magicLength, gameMaster);
     }
     public void PlayerSetter(GameObject player)
     {
         playerObject = player;
+        enemyHpController.PlayerAudioSetter(player.GetComponentInChildren<PlayerAudio>());
+        if(enemyMove != null)
+        enemyMove.SetPlayer(player);
     }
     public void MagicPoolSetter(MagicPool pool)
     {

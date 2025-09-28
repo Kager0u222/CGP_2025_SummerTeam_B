@@ -16,3 +16,4 @@ MonoBehaviour:
   gimmickLayer: 8
   enemyLayer: 7
   playerLayer: 6
+  barrierLayer: 11

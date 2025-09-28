@@ -69,11 +69,11 @@ public class PlayerController : MonoBehaviour
         //ワイヤー展開中の処理
         playerWire.Wire(rb, layers.GroundLayer, layers.GimmickLayer);
         //もし射撃中なら射撃
-        if (isFire) playerShooting.Shoot(layers.GroundLayer, layers.EnemyLayer, cameraTransform, cameraBaseTransform);
+        if (isFire) playerShooting.Shoot(cameraTransform, cameraBaseTransform);
         //射撃クールタイムを減少
         playerShooting.LifeTimeDecreaser(Time.fixedDeltaTime * gameMasterController.PhysicsSpeed);
         //y座標が一定以下になったらリセット
-        if (transform.position.y < -100) SceneManager.LoadScene("PlayerMotionTestScene");
+        if (transform.position.y < -100) gameMasterController.StartLoadScene();
         
 
     }
@@ -132,7 +132,11 @@ public class PlayerController : MonoBehaviour
         cameraRotation.x = Mathf.Clamp(cameraRotation.x + context.ReadValue<Vector2>().y * cameraSensitivity, -90, 80);
         cameraRotation.y += context.ReadValue<Vector2>().x * cameraSensitivity;
         //上の値をカメラの角度に反映
-        cameraBaseTransform.rotation = Quaternion.Euler(-cameraRotation.x, cameraRotation.y, 0);
+        if (cameraBaseTransform != null)
+        {
+            cameraBaseTransform.rotation = Quaternion.Euler(-cameraRotation.x, cameraRotation.y, 0);
+        }
+
     }
     //魔法切り替え処理
     //player inputから切り替え操作に紐づけ

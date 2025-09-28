@@ -16,8 +16,8 @@ TagManager:
   - Enemy
   - Gimmick
   - Bullet
-  - 
-  - 
+  - PostProcessing
+  - Barrier
   - 
   - 
   - 

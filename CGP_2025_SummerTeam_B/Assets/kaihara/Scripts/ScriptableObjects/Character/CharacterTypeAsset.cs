@@ -8,6 +8,7 @@ public class CharacterTypeAsset : ScriptableObject
         Player,
         Enemy1,
         Enemy2,
-        Enemy3
+        Enemy3,
+        Enemy4
     }
 }

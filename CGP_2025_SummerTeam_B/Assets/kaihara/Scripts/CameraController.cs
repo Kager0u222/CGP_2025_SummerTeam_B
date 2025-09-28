@@ -42,6 +42,7 @@ public class CameraController : MonoBehaviour
         LayerMask layerMask = 1 << layers.GroundLayer;
         layerMask += 1 << layers.EnemyLayer;
         layerMask += 1 << layers.GimmickLayer;
+        layerMask += 1 << layers.BarrierLayer;
         if (Physics.SphereCast(transform.position, 0.3f, cameraObject.transform.position - transform.position, out hit, Vector3.Distance(cameraObject.transform.position, transform.position) + 0.3f, layerMask))
         {
             transform.position += (-cameraObject.transform.position + transform.position).normalized * Vector3.Distance(cameraObject.transform.position, hit.point);

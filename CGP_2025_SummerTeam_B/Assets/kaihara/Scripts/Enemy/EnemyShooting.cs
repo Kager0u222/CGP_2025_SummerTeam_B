@@ -25,6 +25,7 @@ public class EnemyShooting : MonoBehaviour
         //レイヤーマスクの設定
         LayerMask layerMask = 1 << layers.PlayerLayer;
         layerMask += 1 << layers.GroundLayer;
+        layerMask += 1 << layers.BarrierLayer;
 
         //レイの起点と向きの指定
         Ray ray = new Ray(transform.position + Vector3.up * 0.5f, Player.transform.position - transform.position + Vector3.up * 0.5f);

@@ -1,5 +1,7 @@
 using UnityEditor.Callbacks;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.UIElements;
 
 public class PlayerWire : MonoBehaviour
 {
@@ -19,10 +21,19 @@ public class PlayerWire : MonoBehaviour
     [SerializeField] private float wireWidth;
     //ワイヤーの色
     [SerializeField] private Color wireColor;
+    //アンカーの速度
+    [SerializeField] private float anchorSpeed;
     //ワイヤーのマテリアル
     [SerializeField] private Material wireMaterial;
     //ワイヤーの発射位置用オブジェクトの位置取得
     [SerializeField] private Transform wireFireposition;
+    //↑のゲッター
+    public Transform WireFirePositionGetter()
+    {
+        return wireFireposition;
+    }
+    //ワイヤーのアンカー
+    [SerializeField] private WireAnchor wireAnchor;
     //ワイヤーの追加で引っ張る力の強さ
     [SerializeField] private float subWireTension;
 
@@ -32,23 +43,41 @@ public class PlayerWire : MonoBehaviour
     [SerializeField] private float subWireTensionToGimmick;
     //レイヤーのScriptableObject
     [SerializeField] private Layers layers;
+    //ワイヤー飛ばしたときの音
+    [SerializeField] private AudioClip wireFireSE;
+    //ワイヤーつないだときの音
+    [SerializeField] private AudioClip wireConnectSE;
+    //SE流すやつ
+    [SerializeField] private PlayerAudio playerAudio;
     //接続中の物体のレイヤーの番号
     private int layerNumber;
     //ワイヤーがつながってる時の情報保存用
     private SpringJoint sj;
+    //↑のゲッター
+    public SpringJoint SpringJoint { get { return sj; } }
     //linerendererの情報保存用
     private LineRenderer lr;
+    //↑のセッター
+    public void LineRendererPositionSetter(Transform value)
+    {
+        lr.SetPosition(0, wireFireposition.position);
+        lr.SetPosition(1, value.position);
+    }
     //ワイヤーでつないだ物体のRigidbody
     private Rigidbody sjrb;
+    //レイヤーマスク
+    private LayerMask layerMask;
 
-
-    //ワイヤー接続
-    public void StartWire(Transform cameraTransform, Transform cameraBaseTransform)
+    private void Start()
     {
         //レイヤーマスクの設定
-        LayerMask layerMask = 1 << layers.GroundLayer;
+        layerMask = 1 << layers.GroundLayer;
         layerMask += 1 << layers.GimmickLayer;
+    }
 
+    //ワイヤー発射
+    public void StartWire(Transform cameraTransform, Transform cameraBaseTransform)
+    {
         //レイの起点と向きの指定
         Ray ray = new Ray(cameraTransform.position, cameraBaseTransform.forward);
 
@@ -58,14 +87,47 @@ public class PlayerWire : MonoBehaviour
         //ワイヤー射出先の情報の保存と射出可能かの判断用bool値の保存
         bool canFireWire = Physics.Raycast(ray, out hit, wireLength, layerMask);
 
-        //射程内につなげるとこがなければ終了
-        if (!canFireWire||!hit.rigidbody) return;
+        //アンカー発射 向きはwireFirePositionから接触予定点に向けて
+        if(canFireWire)
+            wireAnchor.FireAnchor(anchorSpeed, hit.point - wireFireposition.position,wireLength);
+        //ワイヤーがさせないときも発射するだけ発射する
+        else 
+            wireAnchor.FireAnchor(anchorSpeed, cameraTransform.position + cameraBaseTransform.forward * wireLength - wireFireposition.position,wireLength);
+        //アンカーとLineRendererつなぐ
+        var wire = gameObject.AddComponent<LineRenderer>();
+        //ワイヤー発射音
+        playerAudio.PlaySE(wireFireSE);
 
+        //ワイヤーの設定
+        //ワイヤーの両端を指定
+        wire.SetPosition(0, wireFireposition.position);
+        wire.SetPosition(1, wireAnchor.transform.position);
+        //ワイヤーの太さ
+        wire.startWidth = wireWidth;
+        wire.endWidth = wireWidth;
+        //ワイヤーの色
+        wire.material = wireMaterial;
+        wire.startColor = wireColor;
+        wire.endColor = wireColor;
+        //LineRendererを保存
+        lr = gameObject.GetComponent<LineRenderer>();
+    }
+    //ワイヤー接続
+    public void ConnectWire(Transform hitTransform, Rigidbody hitrb,Vector3 hitPoint)
+    {
+        //すでにワイヤーがつながってたら消す
+        if (sj != null)
+        {
+            Destroy(sj);
+            sj = null;
+        }
+        //ワイヤー接続音
+        playerAudio.PlaySE(wireConnectSE);
         //playerObjectにspring jointをつけていろいろ設定
         var spring = gameObject.AddComponent<SpringJoint>();
         //接地点とplayerObjectを接続
-        spring.connectedBody = hit.rigidbody;
-        spring.connectedAnchor = hit.transform.InverseTransformPoint(hit.point);
+        spring.connectedBody = hitrb;
+        spring.connectedAnchor = hitTransform.InverseTransformPoint(hitPoint);
 
         spring.autoConfigureConnectedAnchor = false;
 
@@ -83,21 +145,6 @@ public class PlayerWire : MonoBehaviour
         //isKinematic確認
         layerNumber = sj.connectedBody.gameObject.layer;
 
-        //ワイヤーを表示
-        var wire = gameObject.AddComponent<LineRenderer>();
-        //ワイヤーの設定
-        //ワイヤーの両端を指定
-        wire.SetPosition(0, wireFireposition.position);
-        wire.SetPosition(1, hit.point);
-        //ワイヤーの太さ
-        wire.startWidth = wireWidth;
-        wire.endWidth = wireWidth;
-        //ワイヤーの色
-        wire.material = wireMaterial;
-        wire.startColor = wireColor;
-        wire.endColor = wireColor;
-        //LineRendererを保存
-        lr = gameObject.GetComponent<LineRenderer>();
     }
 
     //ワイヤー切断
@@ -109,7 +156,10 @@ public class PlayerWire : MonoBehaviour
         sj = null;
         //保存していたLineRendererを削除
         lr = null;
+        //アンカーを無効化
+        wireAnchor.IsAnchorSetter(false);
     }
+
     //ワイヤー展開中の挙動
     public void Wire(Rigidbody rb, int groundLayer, int gimmickLayer)
     {
@@ -132,7 +182,7 @@ public class PlayerWire : MonoBehaviour
         // //SpringJointの都合上あまりギミック用オブジェクトを重くできないので
         // プレイヤーの重さの半分より重いオブジェクトにかかる相対的な力はそれより小さいオブジェクトに比べ小さくなるようにしている)
         if (layerNumber == gimmickLayer)
-            sjrb.AddForce(-powerDirection * tension * subWireTensionToGimmick * Mathf.Clamp(sjrb.mass, 0, rb.mass/2) );
-        
+            sjrb.AddForce(-powerDirection * tension * subWireTensionToGimmick * Mathf.Clamp(sjrb.mass, 0, rb.mass / 2));
+
     }
 }

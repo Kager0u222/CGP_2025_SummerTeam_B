@@ -23,6 +23,9 @@ public class MagicPool : MonoBehaviour
         {
             //生成
             MagicController magic = Instantiate(magicPrefab, magicDefaultPosition, Quaternion.identity, transform);
+            //弾の子particle systemをオフ
+            ParticleSystem particle = magic.GetComponentInChildren<ParticleSystem>();
+            particle.Stop();
             //弾非表示
             magic.gameObject.SetActive(false);
             //Queueに弾を格納
@@ -38,12 +41,18 @@ public class MagicPool : MonoBehaviour
         MagicController magic = MagicQueue.Dequeue();
         //弾表示
         magic.gameObject.SetActive(true);
+        //弾の子particle systemをオフ
+        ParticleSystem particle = magic.GetComponentInChildren<ParticleSystem>();
+        particle.Stop();
         //ステータスの受け渡しなど初期設定
         magic.LaunchMagic(launchPosition, launchRotation, magicType, pool);
     }
 
     public void ReturnMagic(MagicController magic)
     {
+        //弾の子particle systemをオフ
+        ParticleSystem particle = magic.GetComponentInChildren<ParticleSystem>();
+        particle.Stop();
         //弾非表示
         magic.gameObject.SetActive(false);
         //Queueに弾を格納

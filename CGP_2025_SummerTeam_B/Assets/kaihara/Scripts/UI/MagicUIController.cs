@@ -96,7 +96,7 @@ public class MagicUIController : MonoBehaviour
         if (magicType == 1) previousUI = iceUI;
         if (magicType == 2) previousUI = thunderUI;
         //番号変更(正か不かは呼び出し元から参照)
-        magicType += 1 * changeDirection;
+        magicType -= 1 * changeDirection;
         //増えすぎ、減りすぎでループ
         if (magicType > 2) magicType = 0;
         if (magicType < 0) magicType = 2;

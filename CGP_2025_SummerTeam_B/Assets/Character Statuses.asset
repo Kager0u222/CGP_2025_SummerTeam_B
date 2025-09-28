@@ -20,3 +20,5 @@ MonoBehaviour:
     hpmax: 20
   enemy3Status:
     hpmax: 20
+  enemy4Status:
+    hpmax: 70
