@@ -38,6 +38,7 @@ public class Clear : MonoBehaviour
                 inputActions = new InputSystem_Actions();
                 inputActions.Player.Disable();
                 inputActions.Dispose();
+                GameMasterController.currentCheckPoint = Vector3.zero;
                 SceneManager.LoadScene("ClearLoad");
             }
             
