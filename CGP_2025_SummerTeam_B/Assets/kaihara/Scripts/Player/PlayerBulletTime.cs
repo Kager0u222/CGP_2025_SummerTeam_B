@@ -52,6 +52,10 @@ public class PlayerBulletTime : MonoBehaviour
     {
         UI();
         PostProcess();
+        if(gameMasterController.PhysicsSpeed == 1 && isBulletTime)
+        {
+            isBulletTime = false;
+        }
     }
     public void BulletTimeStart()
     {

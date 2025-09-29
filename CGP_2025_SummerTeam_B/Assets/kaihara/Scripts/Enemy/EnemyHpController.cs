@@ -8,6 +8,8 @@ public class EnemyHpController : HpController
     [SerializeField] private AudioClip deathSE;
     //敵の音流すやつ
     [SerializeField] private EnemyAudio enemyAudio;
+    //被弾した時刻を保存
+    private float damagedTime;
     //プレイヤーの音鳴らすやつ
     private PlayerAudio playerAudio;
     //上のやつのセッター
@@ -26,7 +28,8 @@ public class EnemyHpController : HpController
     }
     public override void OnDamage()
     {
-        if(enemyAudio != null && Hp > 0)
+        if (enemyAudio != null && Hp > 0 && Time.time - damagedTime > 0.1f)
             enemyAudio.PlaySE(damageSE);
+            damagedTime = Time.time;
     }
 }

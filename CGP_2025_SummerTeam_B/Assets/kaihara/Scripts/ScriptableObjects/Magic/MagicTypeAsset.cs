@@ -9,6 +9,7 @@ public class MagicTypeAsset : ScriptableObject
         PlayerShort,
         PlayerLong,
         EnemyNormal,
-        EnemyShort
+        EnemyShort,
+        EnemyRapid
     } 
 }

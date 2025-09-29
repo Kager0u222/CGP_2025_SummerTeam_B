@@ -12,8 +12,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private GameObject cameraObject;
     //カメラの注視点のオブジェクト
     [SerializeField]private GameObject cameraFocusObject;
-    //カメラ感度
-    [SerializeField]private float cameraSensitivity;
+
 
     //物体の中心からみたカメラの中心(注視点?)の位置
     [SerializeField] private Vector3 cameraFocusLocalPosition;

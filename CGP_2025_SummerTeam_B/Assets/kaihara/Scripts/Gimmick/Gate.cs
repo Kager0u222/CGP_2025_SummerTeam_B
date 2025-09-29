@@ -19,10 +19,10 @@ public class Gate : MonoBehaviour
     void Update()
     {
         //トリガーが解除されていれば徐々に小さく
-        if (trigger.IsUnlocked) transform.localScale -= new Vector3(defaultScale.x * disappearSpeed, defaultScale.y * disappearSpeed, defaultScale.z * disappearSpeed);
+        if (trigger.IsUnlocked) transform.localScale *= disappearSpeed;
         //トリガーが解除されていなければ大きさもとに戻す
         else transform.localScale = defaultScale;
         //完全に小さくなったら無効化
-        if (transform.localScale == new Vector3(0,0,0)) gameObject.SetActive(false);
+        if (transform.localScale == Vector3.zero) gameObject.SetActive(false);
     }
 }

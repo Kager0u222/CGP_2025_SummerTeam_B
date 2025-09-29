@@ -15,7 +15,7 @@ public class CameraSensitivity : MonoBehaviour
 
         cameraSlider.onValueChanged.AddListener(SetVolume);
     }
-  void SetVolume(float value)
+    void SetVolume(float value)
     {
         cameraSensitivity = value;
     }   

@@ -9,19 +9,26 @@ public class GameMasterController : MonoBehaviour
 {
     //プレイヤーのオブジェクト
     [SerializeField] private GameObject player;
+
     //弾のプールのクラス
     [SerializeField] private MagicPool magicPool;
     //バレットタイム用のゲーム全体(主に物理挙動)の速度
     [Range(0f, 3f)] private float physicsSpeed = 1;
     //ロードで画面隠す用
     [SerializeField] private Image blackImage;
+    //オプションのクラス
+    [SerializeField] private OptionController optionController;
+
     //現在のチェックポイント
     public static Vector3 currentCheckPoint;
     //ロード中かどうか
     private bool isLoading = false;
+    //inputActionのラッパークラス
+    private InputSystem_Actions inputActions;
 
     void Start()
     {
+        
         foreach (EnemyController enemy in EnemyController.enemys)
         {
             //敵にプレイヤーのオブジェクトと魔法のpoolとこのクラスを渡す
@@ -40,27 +47,26 @@ public class GameMasterController : MonoBehaviour
             player.transform.position = currentCheckPoint;
         //そうでなければ初期位置
         else player.transform.position = new Vector3(0, 3.5f, 0);
+
+        //inputsystemの初期化
+        inputActions = new InputSystem_Actions();
+        inputActions.Player.Enable();
     }
 
     // Update is called once per frame
     void Update()
     {
         //画面左クリックでカーソル消す
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.leftButton.wasPressedThisFrame && !optionController.IsOpen)
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
         //escでカーソル戻す
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (Keyboard.current.escapeKey.wasPressedThisFrame || optionController.IsOpen)
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-        }
-        //Rでシーンをロード
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            StartLoadScene();
         }
         //画面の黒いやつ薄くする
         if (blackImage.color.a > 0)
@@ -70,17 +76,23 @@ public class GameMasterController : MonoBehaviour
             blackImage.color = new Color(0, 0, 0, blackImage.color.a + 0.04f);
         //黒くなりきったらシーンをロード
         if (isLoading && blackImage.color.a >= 1)
+        {
+            
             SceneManager.LoadScene("Stage");
+            
+        }
     }
     //ロード
     public void StartLoadScene()
     {
         isLoading = true;
+        inputActions.Player.Disable();
+        inputActions.Dispose();
     }
     void FixedUpdate()
     {
         //スクリプトから物理シミュレーションを行う場合はここで
-        if (physicsSpeed != 1)
+        if (physicsSpeed != 1&&physicsSpeed != 0)
             Physics.Simulate(Time.fixedDeltaTime * physicsSpeed);
     }
     //物理挙動の処理速度を変更する用のメソッド

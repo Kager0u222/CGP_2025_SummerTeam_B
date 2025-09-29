@@ -9,6 +9,7 @@ public class MagicStatuses : ScriptableObject
     [SerializeField] public PlayerMiddleStatuses playerLong;
     [SerializeField] public EnemyNormalStatuses enemyNormal;
     [SerializeField] public EnemyShortStatuses enemyShort;
+    [SerializeField] public EnemyRapidStatuses enemyRapid;
     //ImagicStatus型でデータ保存クラスを返す(ポリモーフィズム)
     public IMagicStatus GetStatus(MagicTypeAsset.MagicType type) => type switch
     {
@@ -17,6 +18,7 @@ public class MagicStatuses : ScriptableObject
         MagicTypeAsset.MagicType.PlayerShort => playerShort,
         MagicTypeAsset.MagicType.PlayerLong => playerLong,
         MagicTypeAsset.MagicType.EnemyShort => enemyShort,
+        MagicTypeAsset.MagicType.EnemyRapid => enemyRapid,
         _ => null
     };
 }
@@ -106,6 +108,25 @@ public class EnemyNormalStatuses : IMagicStatus
 }
 [System.Serializable]
 public class EnemyShortStatuses : IMagicStatus
+{
+    //火力、射程、弾速、拡散の度合い、クールタイムの変数
+    [SerializeField] float magicDamage, magicLength, magicSpeed, magicShake, magicCoolTime;
+    //同時発射数の変数
+    [SerializeField] int magicLaunchCount;
+    //敵であるか否かの変数
+    [SerializeField] bool magicIsEnemy;
+    //各種値の取得用プロパティ
+    public float MagicDamage => magicDamage;
+    public float MagicLength => magicLength;
+    public float MagicSpeed => magicSpeed;
+    public float MagicShake => magicShake;
+    public float MagicCoolTime => magicCoolTime;
+    public int MagicLaunchCount => magicLaunchCount;
+    public bool MagicIsEnemy => magicIsEnemy;
+}
+
+[System.Serializable]
+public class EnemyRapidStatuses : IMagicStatus
 {
     //火力、射程、弾速、拡散の度合い、クールタイムの変数
     [SerializeField] float magicDamage, magicLength, magicSpeed, magicShake, magicCoolTime;

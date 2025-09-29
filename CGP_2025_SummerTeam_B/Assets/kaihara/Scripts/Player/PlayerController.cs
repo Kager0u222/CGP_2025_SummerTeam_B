@@ -28,6 +28,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerBulletTime playerBulletTime;
     //ゲームの全体を処理するクラス
     [SerializeField] private GameMasterController gameMasterController;
+    //オプションをつかさどるクラス
+    [SerializeField] private OptionController optionController;
+    //オプションパネル
+    [SerializeField] private GameObject optionPanel;
 
     //地面のレイヤーの番号
     [SerializeField] private Layers layers;
@@ -62,6 +66,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(optionPanel.activeSelf) return;
         //接地判定の確認
         PlayerCollision.Collision();
         //移動処理を実行
@@ -81,12 +86,14 @@ public class PlayerController : MonoBehaviour
     //player inputから移動キー入力に紐づけ
     public void OnMove(InputAction.CallbackContext context)
     {
+        if(optionPanel.activeSelf) return;
         inputDirection = context.ReadValue<Vector2>();
     }
     //ジャンプ処理
     //player inputからジャンプキー入力に紐づけ
     public void OnJump(InputAction.CallbackContext context)
     {
+        if(optionPanel.activeSelf) return;
         if (context.performed)
         {
             //接地判定の確認
@@ -103,6 +110,7 @@ public class PlayerController : MonoBehaviour
     //player inputからワイヤーのキー入力に紐づけ
     public void OnWire(InputAction.CallbackContext context)
     {
+        if(optionPanel.activeSelf) return;
         if (context.performed)
         {
             //ワイヤー起動
@@ -120,6 +128,7 @@ public class PlayerController : MonoBehaviour
     //player inputから射撃キー入力に紐づけ
     public void OnFire(InputAction.CallbackContext context)
     {
+        if(optionPanel.activeSelf) return;
         if (context.performed) isFire = true;
         if (context.canceled) isFire = false;
     }
@@ -128,9 +137,10 @@ public class PlayerController : MonoBehaviour
     //さすがに短いので処理は直接ここに
     public void OnCameraRotate(InputAction.CallbackContext context)
     {
+        if(optionPanel.activeSelf) return;
         //マウスの移動量をカメラの回転量に加算
-        cameraRotation.x = Mathf.Clamp(cameraRotation.x + context.ReadValue<Vector2>().y * cameraSensitivity, -90, 80);
-        cameraRotation.y += context.ReadValue<Vector2>().x * cameraSensitivity;
+        cameraRotation.x = Mathf.Clamp(cameraRotation.x + context.ReadValue<Vector2>().y * cameraSensitivity * PlayerPrefs.GetFloat("CameraSensitivity", 1f), -90, 80);
+        cameraRotation.y += context.ReadValue<Vector2>().x * cameraSensitivity * PlayerPrefs.GetFloat("CameraSensitivity", 1f);
         //上の値をカメラの角度に反映
         if (cameraBaseTransform != null)
         {
@@ -142,19 +152,27 @@ public class PlayerController : MonoBehaviour
     //player inputから切り替え操作に紐づけ
     public void OnChangeMagic(InputAction.CallbackContext context)
     {
-        if (context.performed ) playerShooting.ChangeMagic(context.ReadValue<Vector2>().y);
+        if(optionPanel.activeSelf) return;
+        if (context.performed) playerShooting.ChangeMagic(context.ReadValue<Vector2>().y);
     }
     //バレットタイム処理
     //player inputからバレットタイム操作に紐づけ
     public void OnBulletTime(InputAction.CallbackContext context)
     {
+        if(optionPanel.activeSelf) return;
         //押したときに時間経過減速
         if (context.performed) playerBulletTime.BulletTimeStart();
 
         //バレットタイム中なら離したときに時間経過を戻す
         if (context.canceled) playerBulletTime.BulletTimeCancel();
     }
-    
+    //オプション開く
+    public void OnOption(InputAction.CallbackContext context)
+    {
+        if (context.performed) optionController.UIOpen();
+        gameMasterController.PhysicsSpeedSetter(0);
+    }
+
     //コリジョン系の値の取得変更
     //取得は簡単に
     public bool OnGround { get { return onGround; } }

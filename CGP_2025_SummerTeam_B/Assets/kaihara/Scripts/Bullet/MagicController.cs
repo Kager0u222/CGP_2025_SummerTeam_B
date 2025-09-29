@@ -127,6 +127,14 @@ public class MagicController : MonoBehaviour
                 colorOverLifetime.color = particleColor[1];
                 particleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
                 break;
+                //敵の短射程の弾
+            case MagicTypeAsset.MagicType.EnemyRapid:
+                behavior = gameObject.AddComponent<EnemyRapidBehavior>();
+                magicMaterial.material = magicMaterials[3];
+                particleRenderer.material = particleMaterials[2];
+                colorOverLifetime.color = particleColor[1];
+                particleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+                break;
         }
     }
     public void GameMasterSetter(GameMasterController value)
