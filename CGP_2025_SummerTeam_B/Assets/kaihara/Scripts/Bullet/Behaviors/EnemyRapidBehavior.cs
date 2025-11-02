@@ -17,7 +17,7 @@ public class EnemyRapidBehavior : MagicBehavior
         main.startColor = Color.white;
 
         emission.rateOverTime = 0;
-        emission.rateOverDistance = 20;
+        emission.rateOverDistance = 1;
 
         shape.angle = 10;
         shape.radius = 0.00001f;
