@@ -1,8 +1,4 @@
-
-using System.Security.Cryptography;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class PlayerMovement : MonoBehaviour
 {

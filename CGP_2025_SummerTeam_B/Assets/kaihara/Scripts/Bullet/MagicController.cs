@@ -1,9 +1,5 @@
 using System.Collections.Generic;
-using System.Xml.Serialization;
-using NUnit.Framework.Constraints;
-using UnityEditor.Callbacks;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public class MagicController : MonoBehaviour
 {

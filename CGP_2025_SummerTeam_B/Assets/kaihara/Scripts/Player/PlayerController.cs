@@ -1,13 +1,5 @@
-using System.Data;
-using System.Runtime.CompilerServices;
-using Microsoft.Unity.VisualStudio.Editor;
-using NUnit.Framework.Internal.Execution;
-using TMPro;
-using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
